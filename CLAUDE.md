@@ -43,7 +43,7 @@ Not a medical product: it only tracks stock. It must never recommend doses or tr
 | Hosting | Frontend: Firebase Hosting. API: Docker container on **Render** free plan. |
 | Containers | **Docker from day one** (same image must run on Render and, later, Cloud Run) |
 | Tests | JUnit + **Testcontainers** (real PostgreSQL, no H2) |
-| CI | **GitHub Actions** (`mvn verify` on every push/PR) |
+| CI | **GitHub Actions** (`./mvnw verify` on every push/PR, see `.github/workflows/backend-ci.yml`) |
 | Scheduled alerts | GitHub Actions **cron** calling a protected endpoint (not `@Scheduled`) |
 | API documentation | **springdoc-openapi** (Swagger UI), generated from the Spring Boot code |
 | Mapping | DTOs as Java records, **MapStruct** for entity ↔ DTO, Lombok on JPA entities only |
