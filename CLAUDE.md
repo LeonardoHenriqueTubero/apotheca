@@ -35,7 +35,7 @@ Not a medical product: it only tracks stock. It must never recommend doses or tr
 | Area | Choice |
 |---|---|
 | Frontend | Angular (recent version, standalone components), installable **PWA** |
-| Backend | Java 21, Spring Boot (latest stable at project creation, verify), **Maven** |
+| Backend | Java 21, Spring Boot **4.1**, **Maven** (through the Maven Wrapper, `./mvnw`) |
 | Database | PostgreSQL (**Neon** free plan in production, Docker Compose locally) |
 | Migrations | **Flyway** |
 | Auth | **Firebase Authentication**; Angular sends the JWT, Spring Security validates it (resource server) |
@@ -217,7 +217,20 @@ Do not add more (for example a login diagram) unless something is genuinely hard
 
 ## Commands
 
-Fill in the backend and frontend rows once those skeletons exist (build, test, run, migrate, lint).
+Fill in the frontend rows once that skeleton exists (build, test, run, lint).
+
+### Backend (run inside `backend/`)
+
+No local Maven install is needed: `./mvnw` downloads the right Maven version.
+
+| Command | What it does |
+|---|---|
+| `./mvnw spring-boot:run` | Start the API on http://localhost:8080 |
+| `./mvnw verify` | Compile, run all tests and build the jar (same as CI) |
+| `./mvnw test -Dtest=HealthControllerTest` | Run a single test class |
+| `curl localhost:8080/health` | Check that the API is up (`{"status":"ok"}`) |
+
+Swagger UI: http://localhost:8080/swagger-ui.html (OpenAPI JSON at `/v3/api-docs`).
 
 ### Local database (Docker Compose, root of the repo)
 
