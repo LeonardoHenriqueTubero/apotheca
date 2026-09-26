@@ -46,6 +46,7 @@ Not a medical product: it only tracks stock. It must never recommend doses or tr
 | CI | **GitHub Actions** (`mvn verify` on every push/PR) |
 | Scheduled alerts | GitHub Actions **cron** calling a protected endpoint (not `@Scheduled`) |
 | API documentation | **springdoc-openapi** (Swagger UI), generated from the Spring Boot code |
+| Mapping | DTOs as Java records, **MapStruct** for entity ↔ DTO, Lombok on JPA entities only |
 
 Future option (not now): migrate the API to Google Cloud Run, only if a billing account is available.
 Record it as an ADR when it happens ("why we moved from Render").
@@ -55,12 +56,26 @@ Record it as an ADR when it happens ("why we moved from Render").
 ```
 /backend            Spring Boot API
 /frontend           Angular app
-/docs/decisions     ADRs (one file per decision, English)
+/docs/decisions     ADRs (one file per decision or group of related decisions, English)
 /docs/diagrams      Mermaid diagrams (architecture, ER, alert flow)
 /.github/workflows  CI and scheduled jobs
 docker-compose.yml  Local PostgreSQL
 CLAUDE.md
 README.md / README.pt-BR.md
+```
+
+Backend packages (package-by-layer, see ADR 0001):
+
+```
+br.dev.leonardo.apotheca
+├── entity        JPA entities
+├── dto           Request/response records
+├── mapper        MapStruct mappers (entity ↔ DTO)
+├── repository    Spring Data JPA interfaces
+├── service       Business rules, transactions
+├── controller    REST endpoints (DTOs only, never entities)
+├── config        Spring configuration
+└── exception     Custom exceptions + @RestControllerAdvice
 ```
 
 Monorepo on purpose: one PR can change API and UI together, one history, one place for docs.
@@ -152,7 +167,6 @@ Do not add more (for example a login diagram) unless something is genuinely hard
 - Household invite flow (how someone joins a household)
 - Definition of "low stock" (likely a per-medication minimum quantity)
 - Storage of FCM device tokens (needs a table) and alert rules (when, how often, configurable?)
-- Backend package structure / architecture style
 - Generated Angular client from the OpenAPI contract (Swagger UI itself is decided, see Stack; the generated client is still open)
 - Date/timezone handling (expiry as `LocalDate`, alerts in America/Sao_Paulo)
 - Git workflow (branches, PRs, Conventional Commits) and repository license
@@ -195,6 +209,11 @@ Do not add more (for example a login diagram) unless something is genuinely hard
 | 19 | Three Mermaid diagrams (architecture, ER, alert flow) | Recruiters read the README first; text diagrams stay versioned and updatable |
 | 20 | springdoc-openapi (Swagger UI) in the backend | Free, generated from code, lets endpoints be tested from the browser before the frontend exists; good portfolio signal |
 | 21 | App name: Apotheca | Short, memorable, evokes the traditional home medicine cabinet; replaces the working title |
+| 22 | Package-by-layer: `entity`, `dto`, `mapper`, `repository`, `service`, `controller`, `config`, `exception` | Small MVP; most common layout at junior level, easy to explain in interviews (see ADR 0001) |
+| 23 | DTOs as Java records, no Lombok on DTOs | Records are immutable and concise; Lombok is not needed for DTOs (see ADR 0001) |
+| 24 | MapStruct for entity ↔ DTO mapping, in its own `mapper` package | Avoids hand-written mapping; compile-time checked; common in Spring job postings (see ADR 0001) |
+| 25 | Lombok on JPA entities: `@Getter`/`@Setter`/`@NoArgsConstructor` only, no `@Data`/`@ToString`/`@EqualsAndHashCode` | Entities must be mutable for Hibernate; avoids equals/hashCode/toString issues with lazy relationships (see ADR 0001) |
+| 26 | Base package `br.dev.leonardo.apotheca` | Reverse-domain naming convention; no registered domain of our own |
 
 ## Commands
 
