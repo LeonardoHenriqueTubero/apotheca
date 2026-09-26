@@ -1,0 +1,22 @@
+services:
+  db:
+    image: postgres:17-alpine
+    container_name: apotheca-db
+    restart: unless-stopped
+    environment:
+      # Local development only. Production credentials live in Neon / platform secrets.
+      POSTGRES_DB: ${POSTGRES_DB:-apotheca}
+      POSTGRES_USER: ${POSTGRES_USER:-apotheca}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-apotheca}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - apotheca-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-apotheca} -d ${POSTGRES_DB:-apotheca}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  apotheca-db-data:

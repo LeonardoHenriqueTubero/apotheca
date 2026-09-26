@@ -198,4 +198,19 @@ Do not add more (for example a login diagram) unless something is genuinely hard
 
 ## Commands
 
-Fill in once the skeleton exists (build, test, run, migrate, lint).
+Fill in the backend and frontend rows once those skeletons exist (build, test, run, migrate, lint).
+
+### Local database (Docker Compose, root of the repo)
+
+| Command | What it does |
+|---|---|
+| `docker compose up -d` | Start PostgreSQL 17 in the background |
+| `docker compose ps` | Show container state and healthcheck |
+| `docker compose logs -f db` | Follow the database logs |
+| `docker compose exec db psql -U apotheca -d apotheca` | Open a psql shell |
+| `docker compose down` | Stop the container, keep the data |
+| `docker compose down -v` | Stop **and delete** the volume (fresh database) |
+
+Local connection string (defaults, overridable through `POSTGRES_*` environment variables):
+`jdbc:postgresql://localhost:5432/apotheca`, user `apotheca`, password `apotheca`.
+Development credentials only — production runs on Neon with platform secrets.
