@@ -1,0 +1,16 @@
+# Secrets: never commit
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.jks
+*service-account*.json
+*firebase-adminsdk*.json
+
+# IDE / OS
+.idea/
+.vscode/
+*.iml
+.DS_Store
