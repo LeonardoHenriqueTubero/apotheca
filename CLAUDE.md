@@ -35,7 +35,7 @@ Not a medical product: it only tracks stock. It must never recommend doses or tr
 | Area | Choice |
 |---|---|
 | Frontend | Angular (recent version, standalone components), installable **PWA** |
-| UI library | **Angular Material** (Material 3 theming via CSS variables); theme/visual identity still open |
+| UI library | **Angular Material** (Material 3 theming via CSS variables); visual identity in ADR 0005 |
 | Backend | Java 21, Spring Boot **4.1**, **Maven** (through the Maven Wrapper, `./mvnw`) |
 | Database | PostgreSQL (**Neon** free plan in production, Docker Compose locally) |
 | Migrations | **Flyway** |
@@ -46,7 +46,7 @@ Not a medical product: it only tracks stock. It must never recommend doses or tr
 | Tests | JUnit + **Testcontainers** (real PostgreSQL, no H2) |
 | CI | **GitHub Actions**, one workflow per app filtered by path: `backend-ci.yml` (`./mvnw verify`), `frontend-ci.yml` (`ng lint`, `ng test`, `ng build`); see ADR 0004 |
 | Lint (frontend) | **ESLint** via `angular-eslint`, default rules from the Angular CLI (see ADR 0004) |
-| Scheduled alerts | GitHub Actions **cron** calling a protected endpoint (not `@Scheduled`) |
+| Scheduled alerts | GitHub Actions **cron** (daily) calling a protected endpoint (not `@Scheduled`); per-user frequency, see ADR 0008 |
 | API documentation | **springdoc-openapi** (Swagger UI), generated from the Spring Boot code |
 | Mapping | DTOs as Java records, **MapStruct** for entity ↔ DTO, Lombok on JPA entities only |
 
@@ -94,6 +94,14 @@ State lives in services with signals (no NgRx). A feature never imports another 
 
 Monorepo on purpose: one PR can change API and UI together, one history, one place for docs.
 
+## Git workflow and license (see ADR 0009)
+
+- `main` is always stable. Work on short-lived branches: `feature/...`, `fix/...`
+  (and `docs/...`, `chore/...`). Merge only through a pull request, after CI passes.
+- Commit messages follow **Conventional Commits** (`feat:`, `fix:`, `docs:`, `chore:`, `ci:`,
+  `test:`, `refactor:`, optional scope such as `feat(backend):`).
+- License: **MIT** (`LICENSE` at the root).
+
 ## Non-negotiable rules
 
 1. **Schema changes only via Flyway migration files** in
@@ -117,17 +125,32 @@ Monorepo on purpose: one PR can change API and UI together, one history, one pla
 
 - `users` (identified by Firebase UID)
 - `households`: the unit that owns medicines (family, friend's home). Users may belong to several.
-- `household_members`: user + household + role (`owner` | `member`)
+- `household_members`: user + household + role (`owner` | `member`).
+  Only the owner invites and removes members; removing is a `DELETE` here (ADR 0006).
+- `household_invites`: `household_id`, `token` (unique, indexed), `created_by`, `expires_at`
+  (24h), nullable `used_at` / `used_by`. Single use; joins as `member` (ADR 0006)
 - `storage_locations`: "bathroom cabinet", "bag"
 - `medications`: name, active ingredient, strength, form (tablet, syrup...), unit,
-  optional `shelf_life_after_opening_days`
+  optional `shelf_life_after_opening_days`, optional `minimum_quantity` (low stock, ADR 0007)
 - `batches`: one bought box. Expiration date, current quantity, location,
   optional `opened_at`
 - `stock_movements`: history of use / discard / adjustment per batch (do not just overwrite quantity)
+- `fcm_device_tokens`: `user_id`, `token` (unique), `platform` (`web` | `android` | `ios`),
+  `created_at`, `last_used_at` (ADR 0008)
+- `notification_preferences`: `user_id`, `household_id` (unique pair), `frequency`
+  (`off` | `daily` | `weekly`, default `daily`), nullable `last_sent_at` (ADR 0008)
 
 Key business rule: **effective expiry = the earlier of the printed expiry and
 `opened_at + shelf_life_after_opening_days`** (syrups, eye drops, reconstituted antibiotics).
 Pure logic, cover with unit tests. The app only stores what the user types from the leaflet.
+
+**Low stock** (ADR 0007): only for medications with `minimum_quantity` set; low when the sum of
+`current_quantity` of its **active** batches (quantity > 0 and not past the effective expiry)
+is below `minimum_quantity`. Pure logic, unit tested.
+
+**Alerts** (ADR 0008): the cron runs daily; a push is sent only when the user's frequency for that
+household says it is time (`last_sent_at`) **and** there is something to report (expired,
+expiring within 30 days, or low stock). Never send an empty "all good" push.
 
 Medication vs batch is deliberate: two boxes of the same medicine can have different expiries.
 
@@ -153,8 +176,12 @@ Medication vs batch is deliberate: two boxes of the same medicine can have diffe
 - Mobile first; the app is used on phones.
 - Status (expired / expiring / ok) must never rely on color alone: also use icon and text.
 - Render free plan cold start is ~1 minute: the UI should show a "waking up the server" state.
-- Design work happens in Claude's Design canvas (claude.ai); the result is translated into an
-  Angular theme (tokens as CSS variables / Angular Material theme). Record the identity as an ADR.
+- Visual identity (ADR 0005): calm / trustworthy. Primary teal `#1F6F6B` (light) / `#7FD9D1` (dark).
+  Status colors, light / dark: expired `#B3261E` / `#FF9C8D`; expiring soon or low stock
+  `#8A5A00` / `#FFC876`; ok `#2E7D53` / `#8FE3B0`. Fonts: **Newsreader** (titles, highlights) +
+  **Work Sans** (body). Dark mode from the start. Implemented as an Angular Material M3 theme
+  plus CSS variables; components use tokens, never hard-coded colors.
+  Reference mockup: https://claude.ai/artifact/5EUGTb5cb1cfaaQMK2cket
 
 ## Diagrams
 
@@ -176,14 +203,8 @@ Do not add more (for example a login diagram) unless something is genuinely hard
 
 ## Open decisions (do not assume, ask the developer)
 
-- Visual identity for Apotheca (personality not chosen yet: options discussed were calm/trustworthy, friendly/colorful, minimalist/modern).
-  The UI library is decided (Angular Material, ADR 0003); only the theme applied to it is open.
-- Household invite flow (how someone joins a household)
-- Definition of "low stock" (likely a per-medication minimum quantity)
-- Storage of FCM device tokens (needs a table) and alert rules (when, how often, configurable?)
 - Generated Angular client from the OpenAPI contract (Swagger UI itself is decided, see Stack; the generated client is still open)
 - Date/timezone handling (expiry as `LocalDate`, alerts in America/Sao_Paulo)
-- Git workflow (branches, PRs, Conventional Commits) and repository license
 - Demo mode or demo account so recruiters can try the app
 - Confirm Firebase Hosting works without a card when we reach the first deploy
 
@@ -234,6 +255,18 @@ Do not add more (for example a login diagram) unless something is genuinely hard
 | 30 | UI library: Angular Material (Material 3); theme/visual identity still open | Official, standalone, accessible; M3 CSS variables will receive the identity later; most recognized in job postings (see ADR 0003) |
 | 31 | Frontend CI: own workflow `frontend-ci.yml`, filtered by `frontend/**`, own badge; `npm ci` → `ng lint` → `ng test` → `ng build` | Same pattern as the backend; a change on one side does not run the other's pipeline (see ADR 0004) |
 | 32 | ESLint on the frontend via `angular-eslint`, default rules, run in CI | Catches common mistakes before merge; defaults avoid debating rules before there is code (see ADR 0004) |
+| 33 | Visual identity: calm / trustworthy, teal primary `#1F6F6B` / `#7FD9D1` | Health data calls for a quiet interface; color is reserved for status (see ADR 0005) |
+| 34 | Status colors (expired, expiring soon / low stock, ok) with light and dark values, always icon + text + color | Status is the key information; accessible to color-blind users (see ADR 0005) |
+| 35 | Typography: Newsreader (titles) + Work Sans (body) | Calm editorial tone plus legible body text on phones; free Google Fonts (see ADR 0005) |
+| 36 | Dark mode from the start, identity as M3 theme + CSS variable tokens | Cheap now, expensive later; one place to change colors (see ADR 0005) |
+| 37 | Household invite: shareable link via `navigator.share()`, random token, 24h, single use; sign in before joining | Families share through WhatsApp; a leaked link expires quickly (see ADR 0006) |
+| 38 | Only the owner invites and removes members; removal is a `DELETE` on `household_members` | Simple access control for health data; no extra table (see ADR 0006) |
+| 39 | Low stock: optional `medications.minimum_quantity`; low when active batches sum below it | One threshold cannot fit tablets and syrups; opt-in avoids noise (see ADR 0007) |
+| 40 | Alert frequency per user and household: `off` / `daily` (default) / `weekly`; daily cron sends only when due and relevant | Users control the noise; rules live in the API, testable (see ADR 0008) |
+| 41 | Tables `fcm_device_tokens` (several devices per user) and `notification_preferences` | Push needs device tokens; preferences need `last_sent_at` (see ADR 0008) |
+| 42 | Stable `main`, short `feature/` and `fix/` branches, merge only via PR after CI | CI protects `main`; PRs show working habits to recruiters (see ADR 0009) |
+| 43 | Conventional Commits | Readable history, easy changelog (see ADR 0009) |
+| 44 | MIT license | Permissive and short; lets anyone reuse the code (see ADR 0009) |
 
 ## Commands
 
