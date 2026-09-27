@@ -44,7 +44,8 @@ Not a medical product: it only tracks stock. It must never recommend doses or tr
 | Hosting | Frontend: Firebase Hosting. API: Docker container on **Render** free plan. |
 | Containers | **Docker from day one** (same image must run on Render and, later, Cloud Run) |
 | Tests | JUnit + **Testcontainers** (real PostgreSQL, no H2) |
-| CI | **GitHub Actions** (`./mvnw verify` on every push/PR, see `.github/workflows/backend-ci.yml`) |
+| CI | **GitHub Actions**, one workflow per app filtered by path: `backend-ci.yml` (`./mvnw verify`), `frontend-ci.yml` (`ng lint`, `ng test`, `ng build`); see ADR 0004 |
+| Lint (frontend) | **ESLint** via `angular-eslint`, default rules from the Angular CLI (see ADR 0004) |
 | Scheduled alerts | GitHub Actions **cron** calling a protected endpoint (not `@Scheduled`) |
 | API documentation | **springdoc-openapi** (Swagger UI), generated from the Spring Boot code |
 | Mapping | DTOs as Java records, **MapStruct** for entity ↔ DTO, Lombok on JPA entities only |
@@ -213,7 +214,7 @@ Do not add more (for example a login diagram) unless something is genuinely hard
 | 10 | Maven | Most common in job postings; developer already knows it |
 | 11 | English code/docs, pt-BR UI, bilingual short README | Recruiters read English, family uses Portuguese |
 | 12 | Testcontainers over H2 | Tests run against real PostgreSQL, same as production |
-| 13 | GitHub Actions CI | Automatic build/test, "build passing" badge |
+| 13 | GitHub Actions CI | Automatic build/test, "build passing" badge (see ADR 0004) |
 | 14 | Flyway, schema only by migration files | All databases stay identical; history is in Git |
 | 15 | Households + medication/batch split + stock movements | Multi-home support, different expiries per box, usage history |
 | 16 | Opening-shelf-life support | Real cases: syrups, eye drops, reconstituted antibiotics |
@@ -231,6 +232,8 @@ Do not add more (for example a login diagram) unless something is genuinely hard
 | 28 | Routes in `app.routes.ts`, features lazy loaded with `loadComponent`, no `NgModule` | Standalone components are the default; smaller initial bundle on phones (see ADR 0002) |
 | 29 | State in services with signals, no NgRx | Built into Angular; NgRx adds complexity the MVP does not need (see ADR 0002) |
 | 30 | UI library: Angular Material (Material 3); theme/visual identity still open | Official, standalone, accessible; M3 CSS variables will receive the identity later; most recognized in job postings (see ADR 0003) |
+| 31 | Frontend CI: own workflow `frontend-ci.yml`, filtered by `frontend/**`, own badge; `npm ci` → `ng lint` → `ng test` → `ng build` | Same pattern as the backend; a change on one side does not run the other's pipeline (see ADR 0004) |
+| 32 | ESLint on the frontend via `angular-eslint`, default rules, run in CI | Catches common mistakes before merge; defaults avoid debating rules before there is code (see ADR 0004) |
 
 ## Commands
 
