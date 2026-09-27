@@ -237,8 +237,6 @@ Do not add more (for example a login diagram) unless something is genuinely hard
 
 ## Commands
 
-Fill in the frontend rows once that skeleton exists (build, test, run, lint).
-
 ### Backend (run inside `backend/`)
 
 No local Maven install is needed: `./mvnw` downloads the right Maven version.
@@ -251,6 +249,19 @@ No local Maven install is needed: `./mvnw` downloads the right Maven version.
 | `curl localhost:8080/health` | Check that the API is up (`{"status":"ok"}`) |
 
 Swagger UI: http://localhost:8080/swagger-ui.html (OpenAPI JSON at `/v3/api-docs`).
+
+### Frontend (run inside `frontend/`)
+
+Use the project's Angular CLI (`npx ng` or the npm scripts), not a global `ng`.
+
+| Command | What it does |
+|---|---|
+| `npm install` | Install dependencies (CI uses `npm ci`) |
+| `npm start` | Start the app on http://localhost:4200 |
+| `npx ng lint` | Run ESLint (same as CI) |
+| `npx ng test --watch=false` | Run all unit tests once with Vitest (same as CI) |
+| `npx ng test --watch=false --include src/app/features/home/home.spec.ts` | Run a single test file |
+| `npx ng build` | Production build into `dist/apotheca` (same as CI) |
 
 ### Local database (Docker Compose, root of the repo)
 
