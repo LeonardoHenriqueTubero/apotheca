@@ -35,6 +35,7 @@ Not a medical product: it only tracks stock. It must never recommend doses or tr
 | Area | Choice |
 |---|---|
 | Frontend | Angular (recent version, standalone components), installable **PWA** |
+| UI library | **Angular Material** (Material 3 theming via CSS variables); theme/visual identity still open |
 | Backend | Java 21, Spring Boot **4.1**, **Maven** (through the Maven Wrapper, `./mvnw`) |
 | Database | PostgreSQL (**Neon** free plan in production, Docker Compose locally) |
 | Migrations | **Flyway** |
@@ -77,6 +78,18 @@ br.dev.leonardo.apotheca
 ├── config        Spring configuration
 └── exception     Custom exceptions + @RestControllerAdvice
 ```
+
+Frontend folders (organized by feature, see ADR 0002):
+
+```
+frontend/src/app
+├── core          App-wide singletons: auth guard, JWT interceptor
+├── shared        Reusable components/pipes without business logic; models/ mirrors backend DTOs
+├── features      One folder per domain (medication, household, auth...), each with its own service
+└── app.routes.ts All routes; features lazy loaded with loadComponent
+```
+
+State lives in services with signals (no NgRx). A feature never imports another feature.
 
 Monorepo on purpose: one PR can change API and UI together, one history, one place for docs.
 
@@ -162,8 +175,8 @@ Do not add more (for example a login diagram) unless something is genuinely hard
 
 ## Open decisions (do not assume, ask the developer)
 
-- Visual identity for Apotheca (personality not chosen yet: options discussed were calm/trustworthy, friendly/colorful, minimalist/modern)
-- UI library and Angular structure (Angular Material was only suggested)
+- Visual identity for Apotheca (personality not chosen yet: options discussed were calm/trustworthy, friendly/colorful, minimalist/modern).
+  The UI library is decided (Angular Material, ADR 0003); only the theme applied to it is open.
 - Household invite flow (how someone joins a household)
 - Definition of "low stock" (likely a per-medication minimum quantity)
 - Storage of FCM device tokens (needs a table) and alert rules (when, how often, configurable?)
@@ -214,6 +227,10 @@ Do not add more (for example a login diagram) unless something is genuinely hard
 | 24 | MapStruct for entity ↔ DTO mapping, in its own `mapper` package | Avoids hand-written mapping; compile-time checked; common in Spring job postings (see ADR 0001) |
 | 25 | Lombok on JPA entities: `@Getter`/`@Setter`/`@NoArgsConstructor` only, no `@Data`/`@ToString`/`@EqualsAndHashCode` | Entities must be mutable for Hibernate; avoids equals/hashCode/toString issues with lazy relationships (see ADR 0001) |
 | 26 | Base package `br.dev.leonardo.apotheca` | Reverse-domain naming convention; no registered domain of our own |
+| 27 | Frontend organized by feature: `core/`, `shared/` (with `models/`), `features/` | Recommended by the Angular docs; one feature per folder, easy to find and delete (see ADR 0002) |
+| 28 | Routes in `app.routes.ts`, features lazy loaded with `loadComponent`, no `NgModule` | Standalone components are the default; smaller initial bundle on phones (see ADR 0002) |
+| 29 | State in services with signals, no NgRx | Built into Angular; NgRx adds complexity the MVP does not need (see ADR 0002) |
+| 30 | UI library: Angular Material (Material 3); theme/visual identity still open | Official, standalone, accessible; M3 CSS variables will receive the identity later; most recognized in job postings (see ADR 0003) |
 
 ## Commands
 
