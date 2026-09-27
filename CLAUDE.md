@@ -27,7 +27,11 @@ Not a medical product: it only tracks stock. It must never recommend doses or tr
   explain concepts simply, with a short example, before assuming knowledge.
 - Code, comments, commit messages, ADRs and READMEs: **English**.
 - `README.md` (English, primary) and `README.pt-BR.md` (mirror). Keep both short
-  (what it is, screenshot, stack, how to run, demo link). Details go in ADRs (English only).
+  (what it is, status, planned features, architecture, stack, ADR list, how to run; screenshot
+  and demo link once they exist). Details go in ADRs (English only). The README is portfolio
+  material: never describe a planned feature as done.
+- **Rule:** update the README "Project status" checklist and the ADR table, in **both**
+  languages, in the same PR that completes a roadmap step or adds an ADR.
 - UI text: **pt-BR**.
 
 ## Stack (decided)
