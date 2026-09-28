@@ -256,7 +256,7 @@ Do not add more (for example a login diagram) unless something is genuinely hard
 | 27 | Frontend organized by feature: `core/`, `shared/` (with `models/`), `features/` | Recommended by the Angular docs; one feature per folder, easy to find and delete (see ADR 0002) |
 | 28 | Routes in `app.routes.ts`, features lazy loaded with `loadComponent`, no `NgModule` | Standalone components are the default; smaller initial bundle on phones (see ADR 0002) |
 | 29 | State in services with signals, no NgRx | Built into Angular; NgRx adds complexity the MVP does not need (see ADR 0002) |
-| 30 | UI library: Angular Material (Material 3); theme/visual identity still open | Official, standalone, accessible; M3 CSS variables will receive the identity later; most recognized in job postings (see ADR 0003) |
+| 30 | UI library: Angular Material (Material 3); visual identity defined in ADR 0005 (#33-36) | Official, standalone, accessible; M3 CSS variables carry the identity; most recognized in job postings (see ADR 0003) |
 | 31 | Frontend CI: own workflow `frontend-ci.yml`, filtered by `frontend/**`, own badge; `npm ci` → `ng lint` → `ng test` → `ng build` | Same pattern as the backend; a change on one side does not run the other's pipeline (see ADR 0004) |
 | 32 | ESLint on the frontend via `angular-eslint`, default rules, run in CI | Catches common mistakes before merge; defaults avoid debating rules before there is code (see ADR 0004) |
 | 33 | Visual identity: calm / trustworthy, teal primary `#1F6F6B` / `#7FD9D1` | Health data calls for a quiet interface; color is reserved for status (see ADR 0005) |
