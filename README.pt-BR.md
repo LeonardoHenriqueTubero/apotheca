@@ -103,6 +103,7 @@ com o contexto, as alternativas consideradas e os prós e contras.
 | [0007](docs/decisions/0007-low-stock-definition.md) | Estoque baixo como mínimo opcional por remédio |
 | [0008](docs/decisions/0008-push-tokens-and-alert-rules.md) | Tokens de dispositivo para push e frequência de alerta escolhida pelo usuário |
 | [0009](docs/decisions/0009-git-workflow-and-license.md) | Branches curtas, pull requests, Conventional Commits, licença MIT |
+| [0010](docs/decisions/0010-date-and-time-handling.md) | Datas como `LocalDate`, instantes em UTC, "hoje" no fuso de São Paulo via `Clock` injetado |
 
 ## Como rodar localmente
 
