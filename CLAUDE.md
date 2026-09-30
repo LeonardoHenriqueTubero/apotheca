@@ -208,7 +208,6 @@ Do not add more (for example a login diagram) unless something is genuinely hard
 ## Open decisions (do not assume, ask the developer)
 
 - Generated Angular client from the OpenAPI contract (Swagger UI itself is decided, see Stack; the generated client is still open)
-- Date/timezone handling (expiry as `LocalDate`, alerts in America/Sao_Paulo)
 - Demo mode or demo account so recruiters can try the app
 - Confirm Firebase Hosting works without a card when we reach the first deploy
 
@@ -271,6 +270,9 @@ Do not add more (for example a login diagram) unless something is genuinely hard
 | 42 | Stable `main`, short `feature/` and `fix/` branches, merge only via PR after CI | CI protects `main`; PRs show working habits to recruiters (see ADR 0009) |
 | 43 | Conventional Commits | Readable history, easy changelog (see ADR 0009) |
 | 44 | MIT license | Permissive and short; lets anyone reuse the code (see ADR 0009) |
+| 45 | Calendar dates (`expiration_date`, `opened_at`) as `LocalDate` / `DATE`; month/year expiry stored as the last day of the month | Expiry has no time of day; many boxes print only month/year (see ADR 0010) |
+| 46 | Moments in time as `Instant` / `TIMESTAMPTZ` (UTC), never `TIMESTAMP` without zone | Unambiguous storage; convert only for display (see ADR 0010) |
+| 47 | "Today" in fixed `America/Sao_Paulo` (config `apotheca.time-zone`) via an injected `Clock` bean; status computed only in the API | Server runs in UTC; testable with `Clock.fixed`; screen and push agree (see ADR 0010) |
 
 ## Commands
 

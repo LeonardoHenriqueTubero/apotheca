@@ -104,6 +104,7 @@ context, the alternatives considered and the trade-offs.
 | [0007](docs/decisions/0007-low-stock-definition.md) | Low stock as an optional per-medicine minimum |
 | [0008](docs/decisions/0008-push-tokens-and-alert-rules.md) | Push device tokens and user-chosen alert frequency |
 | [0009](docs/decisions/0009-git-workflow-and-license.md) | Short-lived branches, pull requests, Conventional Commits, MIT license |
+| [0010](docs/decisions/0010-date-and-time-handling.md) | Dates as `LocalDate`, instants in UTC, "today" in São Paulo time via an injected `Clock` |
 
 ## Running locally
 
