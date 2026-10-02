@@ -72,7 +72,7 @@ flowchart LR
     fcm -->|push notification| pwa
 ```
 
-Detalhes (em inglês): [docs/diagrams/architecture.md](docs/diagrams/architecture.md).
+Detalhes (em inglês): [docs/diagrams/architecture.md](docs/diagrams/architecture.md). Esquema do banco: [docs/diagrams/er.md](docs/diagrams/er.md).
 
 ## Tecnologias
 
@@ -104,6 +104,7 @@ com o contexto, as alternativas consideradas e os prós e contras.
 | [0008](docs/decisions/0008-push-tokens-and-alert-rules.md) | Tokens de dispositivo para push e frequência de alerta escolhida pelo usuário |
 | [0009](docs/decisions/0009-git-workflow-and-license.md) | Branches curtas, pull requests, Conventional Commits, licença MIT |
 | [0010](docs/decisions/0010-date-and-time-handling.md) | Datas como `LocalDate`, instantes em UTC, "hoje" no fuso de São Paulo via `Clock` injetado |
+| [0011](docs/decisions/0011-data-model-conventions.md) | Convenções do modelo de dados: ids `BIGINT`, dados por casa, exclusão real, movimentações tipadas |
 
 ## Como rodar localmente
 

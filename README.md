@@ -73,7 +73,7 @@ flowchart LR
     fcm -->|push notification| pwa
 ```
 
-Details: [docs/diagrams/architecture.md](docs/diagrams/architecture.md).
+Details: [docs/diagrams/architecture.md](docs/diagrams/architecture.md). Database schema: [docs/diagrams/er.md](docs/diagrams/er.md).
 
 ## Tech stack
 
@@ -105,6 +105,7 @@ context, the alternatives considered and the trade-offs.
 | [0008](docs/decisions/0008-push-tokens-and-alert-rules.md) | Push device tokens and user-chosen alert frequency |
 | [0009](docs/decisions/0009-git-workflow-and-license.md) | Short-lived branches, pull requests, Conventional Commits, MIT license |
 | [0010](docs/decisions/0010-date-and-time-handling.md) | Dates as `LocalDate`, instants in UTC, "today" in São Paulo time via an injected `Clock` |
+| [0011](docs/decisions/0011-data-model-conventions.md) | Data model conventions: `BIGINT` ids, per-household data, hard delete, typed stock movements |
 
 ## Running locally
 

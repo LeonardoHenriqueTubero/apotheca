@@ -125,7 +125,7 @@ Monorepo on purpose: one PR can change API and UI together, one history, one pla
 7. Health-related data is sensitive under Brazilian privacy law (LGPD). Do **not** record
    *who* took a medicine in the MVP.
 
-## Domain model (draft, refine in V1 migration)
+## Domain model (ER diagram in `docs/diagrams/er.md`, conventions in ADR 0011)
 
 - `users` (identified by Firebase UID)
 - `households`: the unit that owns medicines (family, friend's home). Users may belong to several.
@@ -133,12 +133,14 @@ Monorepo on purpose: one PR can change API and UI together, one history, one pla
   Only the owner invites and removes members; removing is a `DELETE` here (ADR 0006).
 - `household_invites`: `household_id`, `token` (unique, indexed), `created_by`, `expires_at`
   (24h), nullable `used_at` / `used_by`. Single use; joins as `member` (ADR 0006)
-- `storage_locations`: "bathroom cabinet", "bag"
-- `medications`: name, active ingredient, strength, form (tablet, syrup...), unit,
+- `storage_locations`: "bathroom cabinet", "bag" (per household; cannot be deleted while it holds batches)
+- `medications` (per household, no global catalog): name, active ingredient, strength, form (tablet, syrup...), unit,
   optional `shelf_life_after_opening_days`, optional `minimum_quantity` (low stock, ADR 0007)
 - `batches`: one bought box. Expiration date, current quantity, location,
   optional `opened_at`
-- `stock_movements`: history of use / discard / adjustment per batch (do not just overwrite quantity)
+- `stock_movements`: history per batch (do not just overwrite quantity); `type` (`INITIAL` | `USE` |
+  `DISCARD` | `ADJUSTMENT`) and signed `quantity_change`. Creating a batch writes `INITIAL`, so
+  `sum(quantity_change) = current_quantity`. No user column (rule 7)
 - `fcm_device_tokens`: `user_id`, `token` (unique), `platform` (`web` | `android` | `ios`),
   `created_at`, `last_used_at` (ADR 0008)
 - `notification_preferences`: `user_id`, `household_id` (unique pair), `frequency`
@@ -157,6 +159,10 @@ household says it is time (`last_sent_at`) **and** there is something to report 
 expiring within 30 days, or low stock). Never send an empty "all good" push.
 
 Medication vs batch is deliberate: two boxes of the same medicine can have different expiries.
+
+Conventions (ADR 0011): `BIGINT` identity ids; every request checks household membership;
+hard delete with `ON DELETE CASCADE`; quantities `NUMERIC(10,2)` / `BigDecimal`; enums as
+uppercase `VARCHAR` + `CHECK` with `@Enumerated(STRING)`. Dates per ADR 0010.
 
 ## MVP scope
 
@@ -273,6 +279,12 @@ Do not add more (for example a login diagram) unless something is genuinely hard
 | 45 | Calendar dates (`expiration_date`, `opened_at`) as `LocalDate` / `DATE`; month/year expiry stored as the last day of the month | Expiry has no time of day; many boxes print only month/year (see ADR 0010) |
 | 46 | Moments in time as `Instant` / `TIMESTAMPTZ` (UTC), never `TIMESTAMP` without zone | Unambiguous storage; convert only for display (see ADR 0010) |
 | 47 | "Today" in fixed `America/Sao_Paulo` (config `apotheca.time-zone`) via an injected `Clock` bean; status computed only in the API | Server runs in UTC; testable with `Clock.fixed`; screen and push agree (see ADR 0010) |
+| 48 | Primary keys `BIGINT` identity; every request checks household membership | Simple and readable; security comes from access checks, not secret ids (see ADR 0011) |
+| 49 | Medications and storage locations belong to one household, no global catalog | No household sees another's data; ANVISA autocomplete can solve repetition later (see ADR 0011) |
+| 50 | Hard delete with `ON DELETE CASCADE`; storage location `RESTRICT` while it holds batches | No forgotten `deleted_at` filters; real erasure fits LGPD (see ADR 0011) |
+| 51 | Stock movements typed (`INITIAL`/`USE`/`DISCARD`/`ADJUSTMENT`) with signed change; batch creation writes `INITIAL` | History always sums to `current_quantity`, a simple test invariant (see ADR 0011) |
+| 52 | Quantities `NUMERIC(10,2)` / `BigDecimal` | 2.5 ml of syrup, half tablets (see ADR 0011) |
+| 53 | Enums as uppercase `VARCHAR` + `CHECK`, `@Enumerated(STRING)` | Native PG enums are awkward to change in migrations (see ADR 0011) |
 
 ## Commands
 
