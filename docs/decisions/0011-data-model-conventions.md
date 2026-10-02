@@ -32,7 +32,8 @@ household ever sees another one's data. Storage locations follow the same rule.
 
 Deleting is a real `DELETE`, with `ON DELETE CASCADE` down the ownership chain:
 household → members, invites, locations, medications, preferences; medication →
-batches → stock movements; user → memberships, device tokens, preferences.
+batches → stock movements; user → memberships, invites they created, device
+tokens, preferences.
 
 Exceptions:
 
@@ -95,3 +96,5 @@ in lowercase; they mean the same values.
 - ⚠️ Membership checks are mandatory in every service method that loads household data;
   they need their own tests.
 - ⚠️ Deleted data cannot be restored from the app; only database backups can.
+- ⚠️ Deleting the account of a household's only owner would leave it with no owner.
+  The service layer must prevent or handle this; to be decided with account deletion.

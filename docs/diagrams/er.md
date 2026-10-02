@@ -118,6 +118,9 @@ erDiagram
   medication removes its batches and movements (`ON DELETE CASCADE`). A storage
   location that still holds batches cannot be deleted (`ON DELETE RESTRICT`); move
   the batches first. `household_invites.used_by` becomes `NULL` if that user is deleted.
+  Invites created by a deleted user are deleted with them (`created_by` cascades).
+- **Device tokens:** `fcm_device_tokens.last_used_at` is required; it starts equal to
+  `created_at` and is updated each time the app registers the token again.
 - **Invariant:** for every batch, `sum(stock_movements.quantity_change) = current_quantity`.
   Creating a batch writes an `INITIAL` movement.
 - **Privacy (LGPD):** `stock_movements` has no user column, on purpose: the app does
