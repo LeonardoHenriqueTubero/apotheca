@@ -216,6 +216,9 @@ Do not add more (for example a login diagram) unless something is genuinely hard
 - Generated Angular client from the OpenAPI contract (Swagger UI itself is decided, see Stack; the generated client is still open)
 - Demo mode or demo account so recruiters can try the app
 - Confirm Firebase Hosting works without a card when we reach the first deploy
+- Ownership when the only owner deletes their account or leaves a household (ADR 0011):
+  transfer to another member (which one? oldest `joined_at` is the leading option) or block it;
+  the household is deleted if no members remain. Decide with account deletion, record as a new ADR
 
 ## Suggested order of work
 
