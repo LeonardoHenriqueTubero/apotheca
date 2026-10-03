@@ -178,6 +178,8 @@ uppercase `VARCHAR` + `CHECK` with `@Enumerated(STRING)`. Dates per ADR 0010.
   report, and *wasted value* (price share of expired, unused stock)
 - **v2**: per-member reviews of a medication ("worked / didn't"), as a personal opinion,
   stored as `medication_reviews` (member, medication, rating, note). Never medical advice.
+  Also an optional "what we use it for" note per medication (`medications.purpose`, e.g.
+  "headache"), written by the family, never supplied by the app (no leaflet/ANVISA data).
 - **Ideas**: barcode scanning, autocomplete from ANVISA open data, shopping list,
   guidance on correct disposal of expired medicines
 
