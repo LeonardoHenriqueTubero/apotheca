@@ -149,6 +149,9 @@ Monorepo on purpose: one PR can change API and UI together, one history, one pla
 Key business rule: **effective expiry = the earlier of the printed expiry and
 `opened_at + shelf_life_after_opening_days`** (syrups, eye drops, reconstituted antibiotics).
 Pure logic, cover with unit tests. The app only stores what the user types from the leaflet.
+Boundaries: a batch is usable through its effective expiry day and **expired** from the next day;
+**expiring soon** when the effective expiry is within the next 30 days, inclusive. Implemented in
+`ExpiryService` and `LowStockService`.
 
 **Low stock** (ADR 0007): only for medications with `minimum_quantity` set; low when the sum of
 `current_quantity` of its **active** batches (quantity > 0 and not past the effective expiry)
