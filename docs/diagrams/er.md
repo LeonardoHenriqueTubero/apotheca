@@ -66,7 +66,7 @@ erDiagram
         varchar name
         varchar active_ingredient "nullable"
         varchar strength "nullable, e.g. 500 mg"
-        varchar form "TABLET | CAPSULE | SYRUP | DROPS | ..."
+        varchar form "TABLET | CAPSULE | SYRUP | SUSPENSION | DROPS | CREAM | OINTMENT | GEL | SPRAY | INHALER | INJECTION | POWDER | SUPPOSITORY | OTHER"
         varchar unit "UNIT | ML | G"
         int shelf_life_after_opening_days "nullable"
         numeric minimum_quantity "nullable, ADR 0007"

@@ -24,7 +24,7 @@ PWA, que reúne o estoque de remédios da casa num só lugar e avisa antes que a
 - [x] Monorepo com API Spring Boot, app Angular e PostgreSQL local (Docker Compose)
 - [x] CI com GitHub Actions para backend e frontend
 - [x] Arquitetura e principais decisões de projeto documentadas (ADRs abaixo)
-- [ ] Esquema do banco (diagrama ER + primeira migration Flyway)
+- [x] Esquema do banco (diagrama ER + primeira migration Flyway)
 - [ ] Login com Firebase Authentication
 - [ ] Primeiro deploy (Firebase Hosting, Render, Neon)
 - [ ] Remédios, lotes e movimentações de estoque
@@ -125,7 +125,8 @@ npm install
 npm start
 ```
 
-Rode os testes com `./mvnw verify` (backend) e `npx ng test --watch=false` (frontend).
+Rode os testes com `./mvnw verify` (backend, precisa do Docker rodando por causa do Testcontainers) e
+`npx ng test --watch=false` (frontend).
 
 ## Licença
 
