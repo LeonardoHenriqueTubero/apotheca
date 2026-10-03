@@ -298,7 +298,7 @@ No local Maven install is needed: `./mvnw` downloads the right Maven version.
 | Command | What it does |
 |---|---|
 | `./mvnw spring-boot:run` | Start the API on http://localhost:8080 |
-| `./mvnw verify` | Compile, run all tests and build the jar (same as CI) |
+| `./mvnw verify` | Compile, run all tests and build the jar (same as CI); needs Docker running (Testcontainers) |
 | `./mvnw test -Dtest=HealthControllerTest` | Run a single test class |
 | `curl localhost:8080/health` | Check that the API is up (`{"status":"ok"}`) |
 

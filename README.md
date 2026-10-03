@@ -25,7 +25,7 @@ warns before something runs out or expires.
 - [x] Monorepo with Spring Boot API, Angular app and local PostgreSQL (Docker Compose)
 - [x] CI with GitHub Actions for backend and frontend
 - [x] Architecture and main design decisions documented (ADRs below)
-- [ ] Database schema (ER diagram + first Flyway migration)
+- [x] Database schema (ER diagram + first Flyway migration)
 - [ ] Sign-in with Firebase Authentication
 - [ ] First deploy (Firebase Hosting, Render, Neon)
 - [ ] Medicines, batches and stock movements
@@ -126,7 +126,8 @@ npm install
 npm start
 ```
 
-Run the tests with `./mvnw verify` (backend) and `npx ng test --watch=false` (frontend).
+Run the tests with `./mvnw verify` (backend, needs Docker running for Testcontainers) and
+`npx ng test --watch=false` (frontend).
 
 ## License
 
