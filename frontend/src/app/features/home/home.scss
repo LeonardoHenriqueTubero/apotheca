@@ -5,15 +5,17 @@
   justify-content: center;
   min-height: 100vh;
   padding: 16px;
+  box-sizing: border-box;
   text-align: center;
-  font-family: system-ui, sans-serif;
 }
 
 h1 {
   margin: 0;
-  font-size: 2.5rem;
+  font: var(--mat-sys-display-medium);
+  color: var(--mat-sys-primary);
 }
 
 p {
   margin: 8px 0 0;
+  color: var(--mat-sys-on-surface-variant);
 }

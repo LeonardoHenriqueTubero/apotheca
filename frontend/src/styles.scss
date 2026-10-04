@@ -1,1 +1,35 @@
-/* You can add global styles to this file, and also import other style files */
+@use '@angular/material' as mat;
+@use 'theme-colors' as palettes;
+
+html {
+  color-scheme: light dark;
+
+  @include mat.theme((
+    color: (
+      primary: palettes.$primary-palette,
+      tertiary: palettes.$tertiary-palette,
+      theme-type: color-scheme,
+    ),
+    typography: (
+      plain-family: ('Work Sans Variable', sans-serif),
+      brand-family: ('Newsreader Variable', serif),
+    ),
+    density: 0,
+  ));
+
+  // The generated palette approximates the brand teal; pin the exact values from ADR 0005.
+  @include mat.theme-overrides((
+    primary: light-dark(#1F6F6B, #7FD9D1),
+  ));
+
+  --apotheca-status-expired: light-dark(#B3261E, #FF9C8D);
+  --apotheca-status-warning: light-dark(#8A5A00, #FFC876);
+  --apotheca-status-ok: light-dark(#2E7D53, #8FE3B0);
+}
+
+body {
+  margin: 0;
+  background: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+  font: var(--mat-sys-body-large);
+}

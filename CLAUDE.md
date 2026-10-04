@@ -300,6 +300,7 @@ Do not add more (for example a login diagram) unless something is genuinely hard
 | 58 | Sign-in with Google only in the MVP | One tap, no passwords; email/password can be added without API changes (see ADR 0012) |
 | 59 | Firebase JS SDK wrapped in our own `AuthService`, no AngularFire | AngularFire tends to lag behind new Angular versions (see ADR 0012) |
 | 60 | Bearer scheme in the OpenAPI document (Swagger "Authorize" button) | Protected endpoints stay testable from the browser (see ADR 0012) |
+| 61 | Fonts self-hosted through `@fontsource` npm packages, not the Google Fonts CDN | Works offline in the PWA; no third-party requests with users' IPs (see ADR 0005) |
 
 ## Commands
 

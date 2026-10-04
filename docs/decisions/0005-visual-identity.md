@@ -49,7 +49,9 @@ icon with the label "Vence em breve".
 - **Work Sans** (sans serif) for body text, lists and forms, chosen for legibility
   on small screens.
 
-Both are free Google Fonts.
+Both are free Google Fonts. They are served by the app itself through the `@fontsource`
+npm packages, not by the Google Fonts CDN: they work offline in the PWA and no request
+with the user's IP goes to a third party.
 
 ### 4. Dark mode from the start
 
