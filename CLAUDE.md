@@ -232,9 +232,13 @@ Do not add more (for example a login diagram) unless something is genuinely hard
    draw the architecture diagram
 3. ER diagram, then the `V1` migration and domain model with tests
 4. Auth (Firebase + Spring Security)
-5. **First deploy early** (hello-world to Render, Neon and Firebase Hosting) to find hosting issues sooner
+5. **First deploy early** (hello-world to Render, Neon and Firebase Hosting) to find hosting issues sooner.
+   Also: switch `frontend/src/environments/environment.ts` to the family Firebase project and the
+   Render URL; add the Hosting domain to `apotheca.cors.allowed-origins` and to the API key's
+   allowed sites; test popup vs redirect sign-in on real phones (ADR 0012)
 6. CRUD for medications and batches, status logic, stock movements
-7. Alerts (cron workflow + FCM), then the alert-flow sequence diagram
+7. Alerts (cron workflow + FCM), then the alert-flow sequence diagram.
+   Also: allow the FCM Registration and Firebase Installations APIs on the Firebase API key
 
 ## Decision log (rationale in one line each; expand into `docs/decisions/`)
 
@@ -301,6 +305,9 @@ Do not add more (for example a login diagram) unless something is genuinely hard
 | 59 | Firebase JS SDK wrapped in our own `AuthService`, no AngularFire | AngularFire tends to lag behind new Angular versions (see ADR 0012) |
 | 60 | Bearer scheme in the OpenAPI document (Swagger "Authorize" button) | Protected endpoints stay testable from the browser (see ADR 0012) |
 | 61 | Fonts self-hosted through `@fontsource` npm packages, not the Google Fonts CDN | Works offline in the PWA; no third-party requests with users' IPs (see ADR 0005) |
+| 62 | Icons as individual SVGs in `frontend/public/icons/`, registered in `MatIconRegistry` (`core/icons.ts`) | The full Material Symbols font is ~3.9 MB; SVGs inherit the text color, so they follow the theme |
+| 63 | Sign-in with a popup in the MVP; redirect re-evaluated on the first deploy | Redirect needs the app and the auth domain on the same site (see ADR 0012) |
+| 64 | Firebase API key restricted by site and by API (Identity Toolkit, Token Service) | Least privilege: a copied key cannot reach other Google APIs (see ADR 0012) |
 
 ## Commands
 
