@@ -26,7 +26,7 @@ warns before something runs out or expires.
 - [x] CI with GitHub Actions for backend and frontend
 - [x] Architecture and main design decisions documented (ADRs below)
 - [x] Database schema (ER diagram + first Flyway migration)
-- [ ] Sign-in with Firebase Authentication
+- [x] Sign-in with Firebase Authentication
 - [ ] First deploy (Firebase Hosting, Render, Neon)
 - [ ] Medicines, batches and stock movements
 - [ ] Expiry and low-stock alerts via push notifications

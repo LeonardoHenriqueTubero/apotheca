@@ -25,7 +25,7 @@ PWA, que reúne o estoque de remédios da casa num só lugar e avisa antes que a
 - [x] CI com GitHub Actions para backend e frontend
 - [x] Arquitetura e principais decisões de projeto documentadas (ADRs abaixo)
 - [x] Esquema do banco (diagrama ER + primeira migration Flyway)
-- [ ] Login com Firebase Authentication
+- [x] Login com Firebase Authentication
 - [ ] Primeiro deploy (Firebase Hosting, Render, Neon)
 - [ ] Remédios, lotes e movimentações de estoque
 - [ ] Alertas de validade e estoque baixo por notificação push

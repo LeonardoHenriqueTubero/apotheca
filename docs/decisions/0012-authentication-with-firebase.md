@@ -2,7 +2,7 @@
 
 - **Status:** Accepted
 - **Date:** 2026-10-03
-- **Decision log:** #54, #55, #56, #57, #58, #59, #60
+- **Decision log:** #54, #55, #56, #57, #58, #59, #60, #63, #64
 
 ## Context
 
@@ -60,6 +60,14 @@ the token is the same.
 The Angular app uses the official `firebase` package directly, wrapped in an
 `AuthService` with signals (ADR 0002), plus a guard and an HTTP interceptor in `core/`.
 No AngularFire.
+
+- Sign-in opens a **popup**. Redirect sign-in is unreliable while the app and the Firebase
+  auth domain are on different sites; it is re-evaluated on the first deploy, testing the
+  installed PWA on real phones.
+- The interceptor sends the token only to URLs under `apiUrl`.
+- The Firebase API key is not a secret, but it is **restricted** in Google Cloud: only the
+  app's sites (`http://localhost:4200`, `https://<projectId>.firebaseapp.com`) and only the
+  Identity Toolkit and Token Service APIs.
 
 ### 7. Bearer authentication in Swagger UI
 
