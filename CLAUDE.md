@@ -308,6 +308,7 @@ Do not add more (for example a login diagram) unless something is genuinely hard
 | 62 | Icons as individual SVGs in `frontend/public/icons/`, registered in `MatIconRegistry` (`core/icons.ts`) | The full Material Symbols font is ~3.9 MB; SVGs inherit the text color, so they follow the theme |
 | 63 | Sign-in with a popup in the MVP; redirect re-evaluated on the first deploy | Redirect needs the app and the auth domain on the same site (see ADR 0012) |
 | 64 | Firebase API key restricted by site and by API (Identity Toolkit, Token Service) | Least privilege: a copied key cannot reach other Google APIs (see ADR 0012) |
+| 65 | Local PostgreSQL bound to `127.0.0.1`; Dependabot security alerts on, no routine update PRs for now | The dev password is public and Docker bypasses the host firewall; alerts cover real risks without weekly PR noise |
 
 ## Commands
 
