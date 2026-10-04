@@ -1,4 +1,9 @@
 <main class="home">
   <h1>Apotheca</h1>
-  <p>Controle dos medicamentos da casa</p>
+  <p>{{ firstName() ? 'Olá, ' + firstName() + '!' : 'Olá!' }}</p>
+
+  <button mat-button type="button" (click)="signOut()">
+    <mat-icon svgIcon="logout" />
+    Sair
+  </button>
 </main>

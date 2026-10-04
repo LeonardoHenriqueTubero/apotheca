@@ -1,0 +1,13 @@
+<main class="login">
+  <h1>Apotheca</h1>
+  <p class="tagline">Controle dos medicamentos da casa</p>
+
+  <button mat-stroked-button type="button" [disabled]="signingIn()" (click)="signIn()">
+    <mat-icon svgIcon="google" />
+    Entrar com Google
+  </button>
+
+  @if (error(); as message) {
+    <p class="error" role="alert">{{ message }}</p>
+  }
+</main>

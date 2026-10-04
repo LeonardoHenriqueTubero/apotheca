@@ -33,3 +33,9 @@ body {
   color: var(--mat-sys-on-surface);
   font: var(--mat-sys-body-large);
 }
+
+// An inline SVG sits on the text baseline and makes mat-icon taller than the icon,
+// pushing it up inside buttons.
+.mat-icon > svg {
+  display: block;
+}
