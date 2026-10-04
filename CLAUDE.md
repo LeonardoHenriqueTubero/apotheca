@@ -293,6 +293,13 @@ Do not add more (for example a login diagram) unless something is genuinely hard
 | 51 | Stock movements typed (`INITIAL`/`USE`/`DISCARD`/`ADJUSTMENT`) with signed change; batch creation writes `INITIAL` | History always sums to `current_quantity`, a simple test invariant (see ADR 0011) |
 | 52 | Quantities `NUMERIC(10,2)` / `BigDecimal` | 2.5 ml of syrup, half tablets (see ADR 0011) |
 | 53 | Enums as uppercase `VARCHAR` + `CHECK`, `@Enumerated(STRING)` | Native PG enums are awkward to change in migrations (see ADR 0011) |
+| 54 | API as OAuth2 resource server validating Firebase ID tokens (signature, expiry, issuer, audience = project ID) | No passwords in the project; configuration instead of the Firebase Admin SDK (see ADR 0012) |
+| 55 | Every endpoint requires a token; only `/health` and Swagger are public | New endpoints are protected without anyone remembering (see ADR 0012) |
+| 56 | Stateless API, CSRF disabled, CORS allow-list in `apotheca.cors.allowed-origins` | Bearer tokens are not sent automatically like cookies; free instances lose sessions (see ADR 0012) |
+| 57 | `users` row created on the first `GET /api/me` (get or create) | Explicit and testable, unlike a filter on every request (see ADR 0012) |
+| 58 | Sign-in with Google only in the MVP | One tap, no passwords; email/password can be added without API changes (see ADR 0012) |
+| 59 | Firebase JS SDK wrapped in our own `AuthService`, no AngularFire | AngularFire tends to lag behind new Angular versions (see ADR 0012) |
+| 60 | Bearer scheme in the OpenAPI document (Swagger "Authorize" button) | Protected endpoints stay testable from the browser (see ADR 0012) |
 
 ## Commands
 

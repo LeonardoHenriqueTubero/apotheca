@@ -105,6 +105,7 @@ com o contexto, as alternativas consideradas e os prós e contras.
 | [0009](docs/decisions/0009-git-workflow-and-license.md) | Branches curtas, pull requests, Conventional Commits, licença MIT |
 | [0010](docs/decisions/0010-date-and-time-handling.md) | Datas como `LocalDate`, instantes em UTC, "hoje" no fuso de São Paulo via `Clock` injetado |
 | [0011](docs/decisions/0011-data-model-conventions.md) | Convenções do modelo de dados: ids `BIGINT`, dados por casa, exclusão real, movimentações tipadas |
+| [0012](docs/decisions/0012-authentication-with-firebase.md) | Autenticação: tokens do Firebase conferidos pelo Spring Security, tudo protegido por padrão, login com Google |
 
 ## Como rodar localmente
 
