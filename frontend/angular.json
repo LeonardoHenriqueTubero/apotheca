@@ -33,7 +33,11 @@
                 "input": "public"
               }
             ],
-            "styles": ["src/styles.scss"]
+            "styles": [
+              "@fontsource-variable/newsreader/index.css",
+              "@fontsource-variable/work-sans/index.css",
+              "src/styles.scss"
+            ]
           },
           "configurations": {
             "production": {
