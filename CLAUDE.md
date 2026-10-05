@@ -322,6 +322,8 @@ No local Maven install is needed: `./mvnw` downloads the right Maven version.
 | `./mvnw verify` | Compile, run all tests and build the jar (same as CI); needs Docker running (Testcontainers) |
 | `./mvnw test -Dtest=HealthControllerTest` | Run a single test class |
 | `curl localhost:8080/health` | Check that the API is up (`{"status":"ok"}`) |
+| `docker build -t apotheca-api .` | Build the production image (multi-stage, skips tests; CI runs them) |
+| `docker run --rm --network host apotheca-api` | Run the image against the local database (Linux; port from `PORT`, default 8080) |
 
 Swagger UI: http://localhost:8080/swagger-ui.html (OpenAPI JSON at `/v3/api-docs`).
 
