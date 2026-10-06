@@ -344,6 +344,9 @@ Use the project's Angular CLI (`npx ng` or the npm scripts), not a global `ng`.
 | `npx ng test --watch=false --include src/app/features/home/home.spec.ts` | Run a single test file |
 | `npx ng build` | Production build into `dist/apotheca` (same as CI) |
 
+Deploy to Firebase Hosting (root of the repo; builds first through `predeploy` in `firebase.json`):
+`npx firebase-tools login` once, then `npx firebase-tools deploy --only hosting`.
+
 ### Local database (Docker Compose, root of the repo)
 
 | Command | What it does |

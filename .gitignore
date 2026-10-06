@@ -17,3 +17,6 @@
 
 # Local AI assistant settings
 .claude/
+
+# Firebase CLI cache
+.firebase/

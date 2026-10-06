@@ -1,13 +1,14 @@
-// Still the development project and local API: the first deploy (roadmap step 5) switches
-// these to the family Firebase project and the Render URL.
+// Production: the family Firebase project and the API on Render.
+// These values are public by design (they ship to every browser); access is protected by
+// the API key restrictions and by the API validating Firebase ID tokens (ADR 0012).
 export const environment = {
-  apiUrl: 'http://localhost:8080',
+  apiUrl: 'https://apotheca-api.onrender.com',
   firebase: {
-    apiKey: 'AIzaSyBQC0VCrwQukCHJOY3BHOz6oNGFP6HSU9o',
-    authDomain: 'apotheca-dev-e2f60.firebaseapp.com',
-    projectId: 'apotheca-dev-e2f60',
-    storageBucket: 'apotheca-dev-e2f60.firebasestorage.app',
-    messagingSenderId: '1090311919377',
-    appId: '1:1090311919377:web:e453b0349119bd1b785eb0',
+    apiKey: 'AIzaSyDBMk1yl6zNXUGZLMLaYXbxtEZnTqUxof8',
+    authDomain: 'apotheca-48f83.firebaseapp.com',
+    projectId: 'apotheca-48f83',
+    storageBucket: 'apotheca-48f83.firebasestorage.app',
+    messagingSenderId: '992758114283',
+    appId: '1:992758114283:web:5c4c03f133341b3ffd5bae',
   },
 };
