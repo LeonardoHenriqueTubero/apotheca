@@ -309,6 +309,10 @@ Do not add more (for example a login diagram) unless something is genuinely hard
 | 63 | Sign-in with a popup in the MVP; redirect re-evaluated on the first deploy | Redirect needs the app and the auth domain on the same site (see ADR 0012) |
 | 64 | Firebase API key restricted by site and by API (Identity Toolkit, Token Service) | Least privilege: a copied key cannot reach other Google APIs (see ADR 0012) |
 | 65 | Local PostgreSQL bound to `127.0.0.1`; Dependabot security alerts on, no routine update PRs for now | The dev password is public and Docker bypasses the host firewall; alerts cover real risks without weekly PR noise |
+| 66 | Multi-stage Dockerfile in `backend/` (JDK builds, JRE runs as non-root), tests skipped in the image; port from `PORT` | Smaller, safer image; Testcontainers already runs in CI (see ADR 0013) |
+| 67 | Render Blueprint `render.yaml`: `rootDir: backend`, `autoDeployTrigger: checksPass`, health check `/health` | Infrastructure in Git; no deploy without green CI or a healthy new version (see ADR 0013) |
+| 68 | Render region `virginia`, Neon `us-east-1`, direct (non-pooled) connection | API and database side by side; several queries per request cost more than one trip from Brazil (see ADR 0013) |
+| 69 | Production config only through environment variables (`sync: false`), relaxed binding over `application.properties` | No secrets in Git; local defaults stay usable (see ADR 0013) |
 
 ## Commands
 
@@ -322,6 +326,8 @@ No local Maven install is needed: `./mvnw` downloads the right Maven version.
 | `./mvnw verify` | Compile, run all tests and build the jar (same as CI); needs Docker running (Testcontainers) |
 | `./mvnw test -Dtest=HealthControllerTest` | Run a single test class |
 | `curl localhost:8080/health` | Check that the API is up (`{"status":"ok"}`) |
+| `docker build -t apotheca-api .` | Build the production image (multi-stage, skips tests; CI runs them) |
+| `docker run --rm --network host apotheca-api` | Run the image against the local database (Linux; port from `PORT`, default 8080) |
 
 Swagger UI: http://localhost:8080/swagger-ui.html (OpenAPI JSON at `/v3/api-docs`).
 

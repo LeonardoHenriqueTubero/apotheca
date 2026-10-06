@@ -106,6 +106,7 @@ com o contexto, as alternativas consideradas e os prós e contras.
 | [0010](docs/decisions/0010-date-and-time-handling.md) | Datas como `LocalDate`, instantes em UTC, "hoje" no fuso de São Paulo via `Clock` injetado |
 | [0011](docs/decisions/0011-data-model-conventions.md) | Convenções do modelo de dados: ids `BIGINT`, dados por casa, exclusão real, movimentações tipadas |
 | [0012](docs/decisions/0012-authentication-with-firebase.md) | Autenticação: tokens do Firebase conferidos pelo Spring Security, tudo protegido por padrão, login com Google |
+| [0013](docs/decisions/0013-api-deployment-on-render.md) | Deploy da API: imagem Docker multi-stage no Render (Virgínia, perto do Neon), publicada só depois do CI passar |
 
 ## Como rodar localmente
 

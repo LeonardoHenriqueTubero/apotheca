@@ -1,0 +1,41 @@
+# Render Blueprint: the API's infrastructure, versioned in Git (CLAUDE.md, rule 2).
+# Spec: https://render.com/docs/blueprint-spec
+#
+# Secrets are never written here. Variables with `sync: false` are asked for once,
+# in the Render dashboard, when the Blueprint is first created.
+
+services:
+  - type: web
+    name: apotheca-api
+    runtime: docker
+    plan: free
+    # Closest to Neon's AWS us-east-1 (N. Virginia): the API talks to the database
+    # far more often than the browser talks to the API.
+    region: virginia
+
+    # Monorepo: only changes inside backend/ trigger a new deploy.
+    # The Dockerfile and the build context are relative to this directory.
+    rootDir: backend
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+
+    # Deploy a commit on main only after GitHub Actions (backend-ci.yml) passes.
+    autoDeployTrigger: checksPass
+
+    # Render waits for this endpoint to answer 200 before sending traffic to a new version.
+    healthCheckPath: /health
+
+    envVars:
+      # Neon connection, e.g. jdbc:postgresql://<host>.us-east-1.aws.neon.tech/<db>?sslmode=require
+      - key: SPRING_DATASOURCE_URL
+        sync: false
+      - key: SPRING_DATASOURCE_USERNAME
+        sync: false
+      - key: SPRING_DATASOURCE_PASSWORD
+        sync: false
+      # Family Firebase project ID (overrides apotheca.firebase.project-id)
+      - key: APOTHECA_FIREBASE_PROJECTID
+        sync: false
+      # Firebase Hosting origins, comma separated (overrides apotheca.cors.allowed-origins)
+      - key: APOTHECA_CORS_ALLOWEDORIGINS
+        sync: false

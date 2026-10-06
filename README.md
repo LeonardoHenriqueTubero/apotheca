@@ -107,6 +107,7 @@ context, the alternatives considered and the trade-offs.
 | [0010](docs/decisions/0010-date-and-time-handling.md) | Dates as `LocalDate`, instants in UTC, "today" in São Paulo time via an injected `Clock` |
 | [0011](docs/decisions/0011-data-model-conventions.md) | Data model conventions: `BIGINT` ids, per-household data, hard delete, typed stock movements |
 | [0012](docs/decisions/0012-authentication-with-firebase.md) | Authentication: Firebase ID tokens checked by Spring Security, protected by default, Google sign-in |
+| [0013](docs/decisions/0013-api-deployment-on-render.md) | API deployment: multi-stage Docker image on Render (Virginia, next to Neon), deployed only after CI passes |
 
 ## Running locally
 
