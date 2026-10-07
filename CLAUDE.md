@@ -88,7 +88,7 @@ Frontend folders (organized by feature, see ADR 0002):
 
 ```
 frontend/src/app
-├── core          App-wide singletons: auth guard, JWT interceptor
+├── core          App-wide singletons: auth guard, JWT interceptor, current household
 ├── shared        Reusable components/pipes without business logic; models/ mirrors backend DTOs
 ├── features      One folder per domain (medication, household, auth...), each with its own service
 └── app.routes.ts All routes; features lazy loaded with loadComponent
@@ -218,7 +218,6 @@ Do not add more (for example a login diagram) unless something is genuinely hard
 
 ## Open decisions (do not assume, ask the developer)
 
-- Generated Angular client from the OpenAPI contract (Swagger UI itself is decided, see Stack; the generated client is still open)
 - Demo mode or demo account so recruiters can try the app
 - Ownership when the only owner deletes their account or leaves a household (ADR 0011):
   transfer to another member (which one? oldest `joined_at` is the leading option) or block it;
@@ -234,7 +233,11 @@ Do not add more (for example a login diagram) unless something is genuinely hard
 5. **First deploy early** (done): API on Render (`https://apotheca-api.onrender.com`), database on
    Neon, frontend on Firebase Hosting (`https://apotheca-48f83.web.app`, family project
    `apotheca-48f83`). Still pending: test sign-in on iOS Safari
-6. CRUD for medications and batches, status logic, stock movements
+6. CRUD for medications and batches, status logic, stock movements, in parts (one PR each):
+   6.1 API foundation + households, 6.2 storage locations, 6.3 medications,
+   6.4 batches and stock movements (backend), 6.5 main screens + "waking up the server",
+   6.6 deploy, phone tests, README and demo link decision
+   6b. Household invites and members (ADR 0006), before the alerts
 7. Alerts (cron workflow + FCM), then the alert-flow sequence diagram.
    Also: allow the FCM Registration and Firebase Installations APIs on the Firebase API key
 
@@ -312,6 +315,11 @@ Do not add more (for example a login diagram) unless something is genuinely hard
 | 68 | Render region `virginia`, Neon `us-east-1`, direct (non-pooled) connection | API and database side by side; several queries per request cost more than one trip from Brazil (see ADR 0013) |
 | 69 | Production config only through environment variables (`sync: false`), relaxed binding over `application.properties` | No secrets in Git; local defaults stay usable (see ADR 0013) |
 | 70 | Frontend on Firebase Hosting (Spark plan, no card), deployed by hand with `firebase-tools`; SPA rewrite to `index.html`, hashed assets cached for a year | Confirmed free without a card; manual deploys are enough until releases are frequent |
+| 71 | Household-scoped routes nested under `/api/households/{householdId}/...`; `POST` answers 201 + `Location` | The household in the path makes the access check explicit (see ADR 0014) |
+| 72 | One access check, `HouseholdService.requireMembership`; non-members and unknown IDs both get 404 | Never confirms that another household exists (see ADR 0014) |
+| 73 | Errors as RFC 9457 problem details from a `@RestControllerAdvice`; Bean Validation on request records, invalid fields in `errors` | One standard shape for the frontend; supported by Spring out of the box (see ADR 0014) |
+| 74 | Angular services written by hand with `HttpClient`, models in `shared/models/`; no client generated from OpenAPI | Small API; plain code is easier to read, test and explain (see ADR 0014) |
+| 75 | Current household as app-wide state in `core/household/` (service + guard); no household → `/households/new` | Every feature works inside it, and features must not import each other (see ADR 0014) |
 
 ## Commands
 

@@ -107,6 +107,7 @@ com o contexto, as alternativas consideradas e os prós e contras.
 | [0011](docs/decisions/0011-data-model-conventions.md) | Convenções do modelo de dados: ids `BIGINT`, dados por casa, exclusão real, movimentações tipadas |
 | [0012](docs/decisions/0012-authentication-with-firebase.md) | Autenticação: tokens do Firebase conferidos pelo Spring Security, tudo protegido por padrão, login com Google |
 | [0013](docs/decisions/0013-api-deployment-on-render.md) | Deploy da API: imagem Docker multi-stage no Render (Virgínia, perto do Neon), publicada só depois do CI passar |
+| [0014](docs/decisions/0014-api-design-and-error-format.md) | Desenho da API: rotas dentro da casa, 404 para quem não é membro, erros no padrão RFC 9457, services Angular escritos à mão |
 
 ## Como rodar localmente
 
