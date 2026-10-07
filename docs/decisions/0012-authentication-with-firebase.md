@@ -98,3 +98,13 @@ button and a lock on protected endpoints. `/health` is marked as public.
 - ⚠️ Two simultaneous first requests can race; the unique `firebase_uid` prevents a
   duplicate and one request fails. Acceptable for the MVP.
 - ⚠️ People without a Google account cannot sign in until another method is enabled.
+
+## Update (2026-10-06, first deploy)
+
+- **Popup kept.** Sign-in with the popup works on the deployed app
+  (`https://apotheca-48f83.web.app`) on two Android phones (Chrome and Brave). Redirect is
+  not needed for now. Still to check: Safari on iOS, and the installed PWA once it exists.
+- **Two Firebase projects, two API keys.** The development project (`apotheca-dev-e2f60`)
+  allows only `http://localhost:4200`; the family project (`apotheca-48f83`) allows only
+  `https://apotheca-48f83.web.app/*` and `https://apotheca-48f83.firebaseapp.com/*`.
+  Both are limited to the Identity Toolkit and Token Service APIs.

@@ -220,7 +220,6 @@ Do not add more (for example a login diagram) unless something is genuinely hard
 
 - Generated Angular client from the OpenAPI contract (Swagger UI itself is decided, see Stack; the generated client is still open)
 - Demo mode or demo account so recruiters can try the app
-- Confirm Firebase Hosting works without a card when we reach the first deploy
 - Ownership when the only owner deletes their account or leaves a household (ADR 0011):
   transfer to another member (which one? oldest `joined_at` is the leading option) or block it;
   the household is deleted if no members remain. Decide with account deletion, record as a new ADR
@@ -232,10 +231,9 @@ Do not add more (for example a login diagram) unless something is genuinely hard
    draw the architecture diagram
 3. ER diagram, then the `V1` migration and domain model with tests
 4. Auth (Firebase + Spring Security)
-5. **First deploy early** (hello-world to Render, Neon and Firebase Hosting) to find hosting issues sooner.
-   Also: switch `frontend/src/environments/environment.ts` to the family Firebase project and the
-   Render URL; add the Hosting domain to `apotheca.cors.allowed-origins` and to the API key's
-   allowed sites; test popup vs redirect sign-in on real phones (ADR 0012)
+5. **First deploy early** (done): API on Render (`https://apotheca-api.onrender.com`), database on
+   Neon, frontend on Firebase Hosting (`https://apotheca-48f83.web.app`, family project
+   `apotheca-48f83`). Still pending: test sign-in on iOS Safari
 6. CRUD for medications and batches, status logic, stock movements
 7. Alerts (cron workflow + FCM), then the alert-flow sequence diagram.
    Also: allow the FCM Registration and Firebase Installations APIs on the Firebase API key
@@ -306,13 +304,14 @@ Do not add more (for example a login diagram) unless something is genuinely hard
 | 60 | Bearer scheme in the OpenAPI document (Swagger "Authorize" button) | Protected endpoints stay testable from the browser (see ADR 0012) |
 | 61 | Fonts self-hosted through `@fontsource` npm packages, not the Google Fonts CDN | Works offline in the PWA; no third-party requests with users' IPs (see ADR 0005) |
 | 62 | Icons as individual SVGs in `frontend/public/icons/`, registered in `MatIconRegistry` (`core/icons.ts`) | The full Material Symbols font is ~3.9 MB; SVGs inherit the text color, so they follow the theme |
-| 63 | Sign-in with a popup in the MVP; redirect re-evaluated on the first deploy | Redirect needs the app and the auth domain on the same site (see ADR 0012) |
+| 63 | Sign-in with a popup; kept after the first deploy (works on Android Chrome and Brave; iOS not tested yet) | Redirect needs the app and the auth domain on the same site (see ADR 0012) |
 | 64 | Firebase API key restricted by site and by API (Identity Toolkit, Token Service) | Least privilege: a copied key cannot reach other Google APIs (see ADR 0012) |
 | 65 | Local PostgreSQL bound to `127.0.0.1`; Dependabot security alerts on, no routine update PRs for now | The dev password is public and Docker bypasses the host firewall; alerts cover real risks without weekly PR noise |
 | 66 | Multi-stage Dockerfile in `backend/` (JDK builds, JRE runs as non-root), tests skipped in the image; port from `PORT` | Smaller, safer image; Testcontainers already runs in CI (see ADR 0013) |
 | 67 | Render Blueprint `render.yaml`: `rootDir: backend`, `autoDeployTrigger: checksPass`, health check `/health` | Infrastructure in Git; no deploy without green CI or a healthy new version (see ADR 0013) |
 | 68 | Render region `virginia`, Neon `us-east-1`, direct (non-pooled) connection | API and database side by side; several queries per request cost more than one trip from Brazil (see ADR 0013) |
 | 69 | Production config only through environment variables (`sync: false`), relaxed binding over `application.properties` | No secrets in Git; local defaults stay usable (see ADR 0013) |
+| 70 | Frontend on Firebase Hosting (Spark plan, no card), deployed by hand with `firebase-tools`; SPA rewrite to `index.html`, hashed assets cached for a year | Confirmed free without a card; manual deploys are enough until releases are frequent |
 
 ## Commands
 
