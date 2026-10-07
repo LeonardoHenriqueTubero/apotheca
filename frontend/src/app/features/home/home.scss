@@ -16,6 +16,15 @@ h1 {
 }
 
 p {
-  margin: 8px 0 24px;
+  margin: 8px 0 0;
   color: var(--mat-sys-on-surface-variant);
+}
+
+.household {
+  font: var(--mat-sys-title-medium);
+  color: var(--mat-sys-on-surface);
+}
+
+button {
+  margin-top: 24px;
 }

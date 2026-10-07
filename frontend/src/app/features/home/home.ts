@@ -4,6 +4,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
 
 import { AuthService } from '../../core/auth/auth.service';
+import { HouseholdService } from '../../core/household/household.service';
 
 @Component({
   imports: [MatButtonModule, MatIconModule],
@@ -14,6 +15,8 @@ import { AuthService } from '../../core/auth/auth.service';
 export class Home {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
+
+  readonly household = inject(HouseholdService).current;
 
   readonly firstName = computed(() => {
     const name = this.auth.profile()?.displayName ?? this.auth.user()?.displayName ?? '';

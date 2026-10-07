@@ -1,0 +1,26 @@
+<main class="create-household">
+  <h1>Bem-vindo ao Apotheca</h1>
+  <p class="intro">
+    Para começar, dê um nome à sua casa. É nela que ficam os remédios que a família compartilha.
+  </p>
+
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <mat-form-field appearance="outline">
+      <mat-label>Nome da casa</mat-label>
+      <input
+        matInput
+        formControlName="name"
+        placeholder="Ex.: Casa da família Silva"
+        maxlength="100"
+        autocomplete="off"
+      />
+      <mat-error>Digite um nome para a casa.</mat-error>
+    </mat-form-field>
+
+    <button mat-flat-button type="submit" [disabled]="saving()">Criar casa</button>
+  </form>
+
+  @if (error(); as message) {
+    <p class="error" role="alert">{{ message }}</p>
+  }
+</main>
