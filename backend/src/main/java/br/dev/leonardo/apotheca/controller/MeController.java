@@ -22,10 +22,7 @@ public class MeController {
 
 	@GetMapping("/api/me")
 	public UserResponse me(@AuthenticationPrincipal Jwt jwt) {
-		return userMapper.toResponse(userService.getOrCreate(
-				jwt.getSubject(),
-				jwt.getClaimAsString("email"),
-				jwt.getClaimAsString("name")));
+		return userMapper.toResponse(userService.getOrCreate(jwt));
 	}
 
 }

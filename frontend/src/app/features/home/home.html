@@ -1,6 +1,9 @@
 <main class="home">
   <h1>Apotheca</h1>
   <p>{{ firstName() ? 'Olá, ' + firstName() + '!' : 'Olá!' }}</p>
+  @if (household(); as household) {
+    <p class="household">{{ household.name }}</p>
+  }
 
   <button mat-button type="button" (click)="signOut()">
     <mat-icon svgIcon="logout" />

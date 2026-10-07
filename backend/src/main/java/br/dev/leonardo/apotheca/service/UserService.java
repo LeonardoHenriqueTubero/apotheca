@@ -1,5 +1,6 @@
 package br.dev.leonardo.apotheca.service;
 
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,6 +14,12 @@ public class UserService {
 
 	public UserService(UserRepository userRepository) {
 		this.userRepository = userRepository;
+	}
+
+	/** The user behind a validated Firebase ID token, created on first sight. */
+	@Transactional
+	public User getOrCreate(Jwt jwt) {
+		return getOrCreate(jwt.getSubject(), jwt.getClaimAsString("email"), jwt.getClaimAsString("name"));
 	}
 
 	@Transactional
