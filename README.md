@@ -27,7 +27,7 @@ warns before something runs out or expires.
 - [x] Architecture and main design decisions documented (ADRs below)
 - [x] Database schema (ER diagram + first Flyway migration)
 - [x] Sign-in with Firebase Authentication
-- [ ] First deploy (Firebase Hosting, Render, Neon)
+- [x] First deploy (Firebase Hosting, Render, Neon)
 - [ ] Medicines, batches and stock movements
 - [ ] Expiry and low-stock alerts via push notifications
 
