@@ -2,7 +2,7 @@
 
 - **Status:** Accepted
 - **Date:** 2026-10-06
-- **Decision log:** #71, #72, #73, #74, #75, #76, #77, #78
+- **Decision log:** #71, #72, #73, #74, #75, #76, #77, #78, #79, #80, #81, #82
 
 ## Context
 
@@ -26,7 +26,8 @@ Household-scoped resources live under their household:
 POST /api/households                              create (creator becomes OWNER)
 GET  /api/households                              the user's households
 GET  /api/households/{householdId}                one household
-GET  /api/households/{householdId}/medications    (step 6.3)
+GET  /api/households/{householdId}/storage-locations    list (+ POST, PUT /{id}, DELETE /{id})
+GET  /api/households/{householdId}/medications          list (+ GET /{id}, POST, PUT /{id}, DELETE /{id})
 ```
 
 Plural nouns, standard HTTP methods. `POST` answers `201 Created` with a `Location` header
@@ -74,6 +75,21 @@ case**: "Bolsa" and "bolsa" are the same place for a family. Lists are sorted **
 pt-BR `Collator`**, not with SQL `ORDER BY`: the Alpine PostgreSQL image sorts by byte value
 ("Z" before "a", accented letters last), and Neon may sort differently. The frontend keeps the
 same order with `localeCompare('pt-BR')`.
+
+Medication names **may repeat** ("Dipirona" tablets and "Dipirona" drops are different entries);
+the list is sorted by name, then by strength.
+
+### 3b. Medications
+
+- Required: `name`, `form`, `unit`. Optional: `activeIngredient`, `strength`,
+  `shelfLifeAfterOpeningDays` (> 0) and `minimumQuantity` (> 0, two decimals, ADR 0007). Bean
+  Validation mirrors the `V1` columns, so a bad value is a 400 naming the field, never a 500.
+- Optional text sent blank is stored as `null`: blank is "not informed", not information.
+- Deleting a medication also deletes its batches and stock movements (`ON DELETE CASCADE`,
+  ADR 0011); the screen asks for confirmation and says so.
+- Request → entity mapping is MapStruct too (`@MappingTarget`, ADR 0001), with
+  `unmappedTargetPolicy = ERROR`: a new entity field that nobody maps breaks the build instead
+  of being silently ignored. Updates rely on Hibernate's dirty checking, without `save()`.
 
 ### 4. Frontend: hand-written services
 
