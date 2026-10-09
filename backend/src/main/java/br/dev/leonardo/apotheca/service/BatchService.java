@@ -79,11 +79,7 @@ public class BatchService {
 	}
 
 	private void record(Batch batch, StockMovementType type, BigDecimal quantityChange) {
-		StockMovement movement = new StockMovement();
-		movement.setBatch(batch);
-		movement.setType(type);
-		movement.setQuantityChange(quantityChange);
-		movementRepository.save(movement);
+		movementRepository.save(new StockMovement(batch, type, quantityChange));
 	}
 
 	private Batch requireBatch(Long householdId, Long medicationId, Long batchId, User user) {
