@@ -1,0 +1,103 @@
+<main class="medication-editor">
+  <header>
+    <a mat-icon-button routerLink="/medications" aria-label="Voltar para os medicamentos">
+      <mat-icon svgIcon="arrow_back" />
+    </a>
+    <h1>{{ medicationId === null ? 'Novo medicamento' : 'Editar medicamento' }}</h1>
+  </header>
+
+  @if (error(); as message) {
+    <p class="error" role="alert">{{ message }}</p>
+  }
+
+  @if (notFound()) {
+    <p class="empty">Este medicamento não existe mais.</p>
+  } @else if (!loading()) {
+    <form [formGroup]="form" (ngSubmit)="save()">
+      <mat-form-field appearance="outline">
+        <mat-label>Nome</mat-label>
+        <input matInput formControlName="name" maxlength="150" autocomplete="off" />
+        <mat-hint>Como está na caixa. Ex.: Dipirona</mat-hint>
+        <mat-error>Digite o nome do medicamento.</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Princípio ativo (opcional)</mat-label>
+        <input matInput formControlName="activeIngredient" maxlength="150" autocomplete="off" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Concentração (opcional)</mat-label>
+        <input matInput formControlName="strength" maxlength="50" autocomplete="off" />
+        <mat-hint>Ex.: 500 mg, 250 mg/5 ml</mat-hint>
+      </mat-form-field>
+
+      <div class="row">
+        <mat-form-field appearance="outline">
+          <mat-label>Forma</mat-label>
+          <mat-select formControlName="form">
+            @for (option of forms; track option[0]) {
+              <mat-option [value]="option[0]">{{ option[1] }}</mat-option>
+            }
+          </mat-select>
+          <mat-error>Escolha a forma.</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Medido em</mat-label>
+          <mat-select formControlName="unit">
+            @for (option of units; track option[0]) {
+              <mat-option [value]="option[0]">{{ option[1] }}</mat-option>
+            }
+          </mat-select>
+          <mat-error>Escolha a unidade.</mat-error>
+        </mat-form-field>
+      </div>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Validade depois de aberto (opcional)</mat-label>
+        <input matInput type="number" formControlName="shelfLifeAfterOpeningDays" min="1" step="1" />
+        <span matTextSuffix>dias</span>
+        <mat-hint>Copie da bula. Ex.: xaropes, colírios</mat-hint>
+        <mat-error>Use um número inteiro de dias, maior que zero.</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Avisar quando tiver menos de (opcional)</mat-label>
+        <input matInput type="number" formControlName="minimumQuantity" min="0.01" step="0.01" />
+        @if (form.controls.unit.value; as unit) {
+          <span matTextSuffix>{{ unitShortLabels[unit] }}</span>
+        }
+        <mat-hint>Para o aviso de estoque baixo</mat-hint>
+        <mat-error>Use um número maior que zero.</mat-error>
+      </mat-form-field>
+
+      <button mat-flat-button type="submit" [disabled]="busy()">Salvar</button>
+    </form>
+
+    @if (medicationId !== null) {
+      <section class="delete">
+        @if (confirmingDelete()) {
+          <p>Excluir este medicamento apaga também as caixas e o histórico de uso dele.</p>
+          <div class="actions">
+            <button mat-button type="button" (click)="confirmingDelete.set(false)">Cancelar</button>
+            <button
+              mat-flat-button
+              class="danger"
+              type="button"
+              [disabled]="busy()"
+              (click)="confirmDelete()"
+            >
+              Excluir
+            </button>
+          </div>
+        } @else {
+          <button mat-button class="danger-text" type="button" (click)="confirmingDelete.set(true)">
+            <mat-icon svgIcon="delete" />
+            Excluir medicamento
+          </button>
+        }
+      </section>
+    }
+  }
+</main>

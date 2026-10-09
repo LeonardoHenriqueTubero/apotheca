@@ -65,7 +65,19 @@ describe('Home', () => {
     expect(text('.household')).toBeUndefined();
   });
 
-  it('signs out and goes to the login page', async () => {
+  it('links to the medications and storage locations', () => {
+    const links = [...(fixture.nativeElement as HTMLElement).querySelectorAll('a')].map((link) => [
+      link.textContent?.trim(),
+      link.getAttribute('href'),
+    ]);
+
+    expect(links).toEqual([
+      ['Medicamentos', '/medications'],
+      ['Locais de armazenamento', '/locations'],
+    ]);
+  });
+
+    it('signs out and goes to the login page', async () => {
     const navigate = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
 
     (fixture.nativeElement as HTMLElement).querySelector('button')!.click();

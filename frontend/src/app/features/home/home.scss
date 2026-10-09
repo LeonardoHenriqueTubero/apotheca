@@ -26,7 +26,11 @@ p {
 }
 
 a {
-  margin-top: 24px;
+  margin-top: 8px;
+
+  &:first-of-type {
+    margin-top: 24px;
+  }
 }
 
 button {
