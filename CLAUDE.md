@@ -239,7 +239,7 @@ Do not add more (for example a login diagram) unless something is genuinely hard
    Neon, frontend on Firebase Hosting (`https://apotheca-48f83.web.app`, family project
    `apotheca-48f83`). Still pending: test sign-in on iOS Safari
 6. CRUD for medications and batches, status logic, stock movements, in parts (one PR each;
-   6.1, 6.2 and 6.3 done):
+   6.1 to 6.4 done):
    6.1 API foundation + households, 6.2 storage locations, 6.3 medications (6.3a API, 6.3b screens),
    6.4 batches and stock movements (backend), 6.5 main screens + "waking up the server",
    6.6 deploy, phone tests, README and demo link decision
@@ -341,6 +341,7 @@ Do not add more (for example a login diagram) unless something is genuinely hard
 | 88 | Status `EMPTY` for quantity 0, checked before the dates; ignored by summaries and alerts | A used-up box is not expired medicine in the house (see ADR 0015) |
 | 89 | `opened_at` not after today, checked in `BatchService` with the São Paulo `Clock`, same 400 shape as validation | `@PastOrPresent` uses the UTC server clock (see ADR 0015) |
 | 90 | Use, discard and adjust lock the batch row (`PESSIMISTIC_WRITE`) | Two phones cannot read the same stale quantity (see ADR 0015) |
+| 91 | `GET .../medications/summary`: available quantity (active batches), next expiry, worst status of non-empty batches, low stock; one batch query per household | One rule for the list, the home page and the alerts; no N+1 (see ADR 0015) |
 
 ## Commands
 

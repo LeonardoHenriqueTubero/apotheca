@@ -2,7 +2,7 @@
 
 - **Status:** Accepted
 - **Date:** 2026-10-09
-- **Decision log:** #85, #86, #87, #88, #89, #90
+- **Decision log:** #85, #86, #87, #88, #89, #90, #91
 
 ## Context
 
@@ -60,6 +60,21 @@ Use, discard and adjust load the batch with `PESSIMISTIC_WRITE` (`SELECT ... FOR
 Two phones using the same box at once are served one after the other, so neither reads a
 stale quantity and the history still adds up.
 
+### 6. One summary per medication
+
+`GET /api/households/{id}/medications/summary` returns, for each medication, in the same order
+as the list:
+
+- `availableQuantity`: sum of its **active** batches (not empty, not expired, ADR 0007);
+- `nextExpiry`: the earliest effective expiry among active batches, or `null`;
+- `status`: the worst among its non-empty batches (`EXPIRED`, then `EXPIRING_SOON`, then `OK`),
+  or `EMPTY` when none has anything left;
+- `lowStock`: from `LowStockService`.
+
+All batches of the household are read in one query and grouped in memory, so the list does
+not run one query per medication. The list screen, the home page and the alerts use this
+same rule.
+
 ## Alternatives considered
 
 - **Editable quantity in `PUT`.** Simpler form, but the history would stop adding up.
@@ -69,6 +84,8 @@ stale quantity and the history still adds up.
   counting and typing; partial losses are covered by an adjustment.
 - **Keep date-only status and filter empty boxes in each consumer.** Every summary, screen
   and alert would have to remember the filter.
+- **Summary fields inside `GET .../medications`.** One request less, but create and update
+  responses would have to compute them too, and the editor does not need them.
 - **Optimistic locking with a `@Version` column.** Needs a migration and retry handling;
   a short row lock is enough for a family app.
 
