@@ -2,7 +2,7 @@ import { EnvironmentProviders, inject, provideAppInitializer } from '@angular/co
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 
-const ICONS = ['google', 'logout'];
+const ICONS = ['add', 'arrow_back', 'delete', 'edit', 'google', 'logout'];
 
 export function provideIcons(): EnvironmentProviders {
   return provideAppInitializer(() => {

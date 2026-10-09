@@ -17,6 +17,14 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'locations',
+    canActivate: [authGuard, householdGuard],
+    loadComponent: () =>
+      import('./features/storage-location/storage-locations/storage-locations').then(
+        (m) => m.StorageLocations,
+      ),
+  },
+  {
     path: '',
     pathMatch: 'full',
     canActivate: [authGuard, householdGuard],

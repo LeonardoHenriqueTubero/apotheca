@@ -233,7 +233,8 @@ Do not add more (for example a login diagram) unless something is genuinely hard
 5. **First deploy early** (done): API on Render (`https://apotheca-api.onrender.com`), database on
    Neon, frontend on Firebase Hosting (`https://apotheca-48f83.web.app`, family project
    `apotheca-48f83`). Still pending: test sign-in on iOS Safari
-6. CRUD for medications and batches, status logic, stock movements, in parts (one PR each):
+6. CRUD for medications and batches, status logic, stock movements, in parts (one PR each;
+   6.1 and 6.2 done):
    6.1 API foundation + households, 6.2 storage locations, 6.3 medications,
    6.4 batches and stock movements (backend), 6.5 main screens + "waking up the server",
    6.6 deploy, phone tests, README and demo link decision
@@ -320,6 +321,9 @@ Do not add more (for example a login diagram) unless something is genuinely hard
 | 73 | Errors as RFC 9457 problem details from a `@RestControllerAdvice`; Bean Validation on request records, invalid fields in `errors` | One standard shape for the frontend; supported by Spring out of the box (see ADR 0014) |
 | 74 | Angular services written by hand with `HttpClient`, models in `shared/models/`; no client generated from OpenAPI | Small API; plain code is easier to read, test and explain (see ADR 0014) |
 | 75 | Current household as app-wide state in `core/household/` (service + guard); no household → `/households/new` | Every feature works inside it, and features must not import each other (see ADR 0014) |
+| 76 | 409 Conflict (`ConflictException`) for duplicate names and for deleting a storage location that holds batches; checked in the service, DB constraints as a safety net | Clear messages instead of a 500 from a constraint violation (see ADR 0014) |
+| 77 | Names unique per household ignoring case; lists sorted in Java with a pt-BR `Collator` | "Bolsa" = "bolsa" for a family; the Alpine PostgreSQL image sorts by byte value (see ADR 0014) |
+| 78 | `householdGuard` waits for `AuthService.isSignedIn()` before loading households | A route's guards run concurrently; without it a page reload sends the request without a token (see ADR 0014) |
 
 ## Commands
 

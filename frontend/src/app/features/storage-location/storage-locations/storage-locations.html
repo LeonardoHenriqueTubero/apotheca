@@ -1,0 +1,103 @@
+<main class="storage-locations">
+  <header>
+    <a mat-icon-button routerLink="/" aria-label="Voltar para o início">
+      <mat-icon svgIcon="arrow_back" />
+    </a>
+    <h1>Locais</h1>
+  </header>
+
+  <p class="intro">Onde a família guarda os remédios: armário, gaveta, bolsa...</p>
+
+  <form class="add" [formGroup]="addForm" #addFormRef="ngForm" (ngSubmit)="add()">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Novo local</mat-label>
+      <input matInput formControlName="name" maxlength="100" autocomplete="off" />
+      <mat-error>Digite um nome para o local.</mat-error>
+    </mat-form-field>
+    <button mat-flat-button type="submit" [disabled]="busy()">
+      <mat-icon svgIcon="add" />
+      Adicionar
+    </button>
+  </form>
+
+  @if (error(); as message) {
+    <p class="error" role="alert">{{ message }}</p>
+  }
+
+  @if (locations(); as locations) {
+    @if (locations.length === 0) {
+      <section class="suggestions">
+        <p>Nenhum local ainda. Comece por um destes:</p>
+        <div class="chips">
+          @for (suggestion of suggestions; track suggestion) {
+            <button mat-stroked-button type="button" [disabled]="busy()" (click)="add(suggestion)">
+              {{ suggestion }}
+            </button>
+          }
+        </div>
+      </section>
+    } @else {
+      <ul>
+        @for (location of locations; track location.id) {
+          <li>
+            @if (editingId() === location.id) {
+              <form class="edit" [formGroup]="editForm" (ngSubmit)="saveEdit(location)">
+                <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                  <mat-label>Nome do local</mat-label>
+                  <input
+                    #editInput
+                    matInput
+                    formControlName="name"
+                    maxlength="100"
+                    autocomplete="off"
+                  />
+                  <mat-error>Digite um nome para o local.</mat-error>
+                </mat-form-field>
+                <div class="actions">
+                  <button mat-button type="button" (click)="editingId.set(null)">Cancelar</button>
+                  <button mat-flat-button type="submit" [disabled]="busy()">Salvar</button>
+                </div>
+              </form>
+            } @else if (confirmingDeleteId() === location.id) {
+              <span class="name">Excluir “{{ location.name }}”?</span>
+              <div class="actions">
+                <button mat-button type="button" (click)="confirmingDeleteId.set(null)">
+                  Cancelar
+                </button>
+                <button
+                  mat-flat-button
+                  class="danger"
+                  type="button"
+                  [disabled]="busy()"
+                  (click)="confirmDelete(location)"
+                >
+                  Excluir
+                </button>
+              </div>
+            } @else {
+              <span class="name">{{ location.name }}</span>
+              <div class="actions">
+                <button
+                  mat-icon-button
+                  type="button"
+                  [attr.aria-label]="'Renomear ' + location.name"
+                  (click)="startEditing(location)"
+                >
+                  <mat-icon svgIcon="edit" />
+                </button>
+                <button
+                  mat-icon-button
+                  type="button"
+                  [attr.aria-label]="'Excluir ' + location.name"
+                  (click)="askToDelete(location)"
+                >
+                  <mat-icon svgIcon="delete" />
+                </button>
+              </div>
+            }
+          </li>
+        }
+      </ul>
+    }
+  }
+</main>

@@ -2,7 +2,7 @@
 
 - **Status:** Accepted
 - **Date:** 2026-10-06
-- **Decision log:** #71, #72, #73, #74, #75
+- **Decision log:** #71, #72, #73, #74, #75, #76, #77, #78
 
 ## Context
 
@@ -58,6 +58,23 @@ Validation uses Bean Validation annotations on the request records (`@NotBlank`,
 and `@Valid` in the controller; invalid fields are listed in `errors`. Messages are English
 and technical: the frontend shows its own pt-BR messages and uses the API's only as a fallback.
 
+| Status | When |
+|---|---|
+| 400 Bad Request | invalid request body (listed in `errors`) |
+| 404 Not Found | the resource does not exist, or belongs to a household the user is not in |
+| 409 Conflict | a valid request that clashes with the data: a duplicate name, or deleting a storage location that still holds batches (`ConflictException`) |
+
+The 409 checks run in the service before writing, so the user gets a clear message; the
+database constraints (`UNIQUE`, `ON DELETE RESTRICT`) stay as the last safety net.
+
+### 3a. Names inside a household
+
+Names that must be unique in a household (storage locations, step 6.2) are compared **ignoring
+case**: "Bolsa" and "bolsa" are the same place for a family. Lists are sorted **in Java with a
+pt-BR `Collator`**, not with SQL `ORDER BY`: the Alpine PostgreSQL image sorts by byte value
+("Z" before "a", accented letters last), and Neon may sort differently. The frontend keeps the
+same order with `localeCompare('pt-BR')`.
+
 ### 4. Frontend: hand-written services
 
 Each feature has a service using `HttpClient`, and `shared/models/` holds TypeScript
@@ -70,6 +87,10 @@ No code is generated from the OpenAPI document; Swagger UI stays the API's docum
 feature works inside the current household and features must not import each other (ADR 0002).
 The guard sends a user without a household to `/households/new`. The MVP shows the first
 household; switching between households comes with invites (step 6b).
+
+Angular runs a route's guards **at the same time**, so `householdGuard` first waits for
+Firebase to restore the session (`AuthService.isSignedIn()`); otherwise, on a page reload, its
+request leaves without a token and gets a 401.
 
 ## Alternatives considered
 
