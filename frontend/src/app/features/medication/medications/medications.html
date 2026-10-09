@@ -1,0 +1,39 @@
+<main class="medications">
+  <header>
+    <a mat-icon-button routerLink="/" aria-label="Voltar para o início">
+      <mat-icon svgIcon="arrow_back" />
+    </a>
+    <h1>Medicamentos</h1>
+  </header>
+
+  <a mat-flat-button class="new" routerLink="/medications/new">
+    <mat-icon svgIcon="add" />
+    Novo medicamento
+  </a>
+
+  @if (error(); as message) {
+    <p class="error" role="alert">{{ message }}</p>
+  }
+
+  @if (medications(); as medications) {
+    @if (medications.length === 0) {
+      <p class="empty">Nenhum medicamento cadastrado ainda.</p>
+    } @else {
+      <ul>
+        @for (medication of medications; track medication.id) {
+          <li>
+            <a [routerLink]="['/medications', medication.id]">
+              <span class="name">
+                {{ medication.name }}
+                @if (medication.strength) {
+                  <span class="strength">{{ medication.strength }}</span>
+                }
+              </span>
+              <span class="form">{{ formLabels[medication.form] }}</span>
+            </a>
+          </li>
+        }
+      </ul>
+    }
+  }
+</main>

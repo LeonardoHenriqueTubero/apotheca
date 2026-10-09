@@ -234,7 +234,7 @@ Do not add more (for example a login diagram) unless something is genuinely hard
    Neon, frontend on Firebase Hosting (`https://apotheca-48f83.web.app`, family project
    `apotheca-48f83`). Still pending: test sign-in on iOS Safari
 6. CRUD for medications and batches, status logic, stock movements, in parts (one PR each;
-   6.1, 6.2 and 6.3a done):
+   6.1, 6.2 and 6.3 done):
    6.1 API foundation + households, 6.2 storage locations, 6.3 medications (6.3a API, 6.3b screens),
    6.4 batches and stock movements (backend), 6.5 main screens + "waking up the server",
    6.6 deploy, phone tests, README and demo link decision
@@ -328,6 +328,7 @@ Do not add more (for example a login diagram) unless something is genuinely hard
 | 80 | Deleting a medication cascades to its batches and history, with a confirmation in the UI | Matches ADR 0011; deleting box by box first would be tedious (see ADR 0014) |
 | 81 | Optional text sent blank is stored as `null` | Blank means "not informed" (see ADR 0014) |
 | 82 | Request → entity with MapStruct `@MappingTarget`, `unmappedTargetPolicy = ERROR`; updates via dirty checking, no `save()` | A forgotten new field breaks the build instead of being silently dropped (see ADR 0014) |
+| 83 | Medication screens: list at `/medications`, one editor for `/medications/new` and `/medications/:id`; the unit is suggested from the form (tablet → units, syrup → ml, cream → g) until the user picks one | Fewer taps on the phone; the user can still override it |
 
 ## Commands
 

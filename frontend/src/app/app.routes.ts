@@ -25,6 +25,28 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'medications',
+    canActivate: [authGuard, householdGuard],
+    loadComponent: () =>
+      import('./features/medication/medications/medications').then((m) => m.Medications),
+  },
+  {
+    path: 'medications/new',
+    canActivate: [authGuard, householdGuard],
+    loadComponent: () =>
+      import('./features/medication/medication-editor/medication-editor').then(
+        (m) => m.MedicationEditor,
+      ),
+  },
+  {
+    path: 'medications/:id',
+    canActivate: [authGuard, householdGuard],
+    loadComponent: () =>
+      import('./features/medication/medication-editor/medication-editor').then(
+        (m) => m.MedicationEditor,
+      ),
+  },
+  {
     path: '',
     pathMatch: 'full',
     canActivate: [authGuard, householdGuard],
