@@ -234,8 +234,8 @@ Do not add more (for example a login diagram) unless something is genuinely hard
    Neon, frontend on Firebase Hosting (`https://apotheca-48f83.web.app`, family project
    `apotheca-48f83`). Still pending: test sign-in on iOS Safari
 6. CRUD for medications and batches, status logic, stock movements, in parts (one PR each;
-   6.1 and 6.2 done):
-   6.1 API foundation + households, 6.2 storage locations, 6.3 medications,
+   6.1, 6.2 and 6.3a done):
+   6.1 API foundation + households, 6.2 storage locations, 6.3 medications (6.3a API, 6.3b screens),
    6.4 batches and stock movements (backend), 6.5 main screens + "waking up the server",
    6.6 deploy, phone tests, README and demo link decision
    6b. Household invites and members (ADR 0006), before the alerts
@@ -324,6 +324,10 @@ Do not add more (for example a login diagram) unless something is genuinely hard
 | 76 | 409 Conflict (`ConflictException`) for duplicate names and for deleting a storage location that holds batches; checked in the service, DB constraints as a safety net | Clear messages instead of a 500 from a constraint violation (see ADR 0014) |
 | 77 | Names unique per household ignoring case; lists sorted in Java with a pt-BR `Collator` | "Bolsa" = "bolsa" for a family; the Alpine PostgreSQL image sorts by byte value (see ADR 0014) |
 | 78 | `householdGuard` waits for `AuthService.isSignedIn()` before loading households | A route's guards run concurrently; without it a page reload sends the request without a token (see ADR 0014) |
+| 79 | Medication names may repeat; list sorted by name (pt-BR) then strength | Same medicine in different forms are different entries (see ADR 0014) |
+| 80 | Deleting a medication cascades to its batches and history, with a confirmation in the UI | Matches ADR 0011; deleting box by box first would be tedious (see ADR 0014) |
+| 81 | Optional text sent blank is stored as `null` | Blank means "not informed" (see ADR 0014) |
+| 82 | Request → entity with MapStruct `@MappingTarget`, `unmappedTargetPolicy = ERROR`; updates via dirty checking, no `save()` | A forgotten new field breaks the build instead of being silently dropped (see ADR 0014) |
 
 ## Commands
 
