@@ -15,7 +15,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.time.LocalDate;
+import java.math.BigDecimal;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -126,11 +126,10 @@ class BatchControllerTest {
 	@Test
 	void rejectsInvalidFieldsNamingEachOne() throws Exception {
 		postJson(batches(household, syrup), maria(), """
-				{"quantity": 0, "openedAt": "2999-01-01"}""", status().isBadRequest())
+				{"quantity": 0}""", status().isBadRequest())
 				.andExpect(jsonPath("$.errors.storageLocationId").exists())
 				.andExpect(jsonPath("$.errors.expirationDate").exists())
-				.andExpect(jsonPath("$.errors.quantity").exists())
-				.andExpect(jsonPath("$.errors.openedAt").exists());
+				.andExpect(jsonPath("$.errors.quantity").exists());
 	}
 
 	@Test
@@ -198,6 +197,139 @@ class BatchControllerTest {
 
 		mockMvc.perform(delete(locations(household) + "/" + cabinet).with(maria()))
 				.andExpect(status().isConflict());
+	}
+
+	@Test
+	void rejectsAnOpeningDateAfterTodayInSaoPaulo() throws Exception {
+		createBatch(cabinet, "2027-10-31", "60", TODAY.plusDays(1).toString())
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.errors.openedAt", is("must not be in the future")));
+
+		long batch = idOf(createBatch(cabinet, "2027-10-31", "60", TODAY.toString()));
+		mockMvc.perform(put(batch(batch)).with(maria()).contentType(MediaType.APPLICATION_JSON).content("""
+				{"storageLocationId": %d, "expirationDate": "2027-10-31", "openedAt": "%s"}"""
+				.formatted(cabinet, TODAY.plusDays(1))))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.errors.openedAt").exists());
+	}
+
+	@Test
+	void usingAClosedBoxDecreasesItAndOpensItToday() throws Exception {
+		long batch = idOf(createBatch(cabinet, "2027-10-31", "60", null));
+
+		use(batch, "5")
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.currentQuantity").value(55))
+				.andExpect(jsonPath("$.openedAt", is(TODAY.toString())))
+				.andExpect(jsonPath("$.effectiveExpiry", is(TODAY.plusDays(14).toString())))
+				.andExpect(jsonPath("$.status", is("EXPIRING_SOON")));
+	}
+
+	@Test
+	void usingAnOpenBoxKeepsItsOpeningDate() throws Exception {
+		String openedAt = TODAY.minusDays(3).toString();
+		long batch = idOf(createBatch(cabinet, "2027-10-31", "60", openedAt));
+
+		use(batch, "2.5")
+				.andExpect(jsonPath("$.currentQuantity").value(57.5))
+				.andExpect(jsonPath("$.openedAt", is(openedAt)));
+	}
+
+	@Test
+	void doesNotUseMoreThanTheBoxHolds() throws Exception {
+		long batch = idOf(createBatch(cabinet, "2027-10-31", "10", null));
+
+		use(batch, "10.01").andExpect(status().isConflict());
+		use(batch, "0").andExpect(status().isBadRequest());
+
+		mockMvc.perform(get(batch(batch)).with(maria()))
+				.andExpect(jsonPath("$.currentQuantity").value(10))
+				.andExpect(jsonPath("$.openedAt").doesNotExist());
+	}
+
+	@Test
+	void discardingEmptiesTheBoxOnlyOnce() throws Exception {
+		long batch = idOf(createBatch(cabinet, TODAY.minusDays(1).toString(), "8", null));
+
+		discard(batch)
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.currentQuantity").value(0))
+				.andExpect(jsonPath("$.status", is("EMPTY")));
+		discard(batch).andExpect(status().isConflict());
+	}
+
+	@Test
+	void adjustingSetsTheCountedQuantityInEitherDirection() throws Exception {
+		long batch = idOf(createBatch(cabinet, "2027-10-31", "100", null));
+
+		adjust(batch, "80").andExpect(jsonPath("$.currentQuantity").value(80));
+		adjust(batch, "85").andExpect(jsonPath("$.currentQuantity").value(85));
+		adjust(batch, "85").andExpect(status().isOk());
+		adjust(batch, "-1").andExpect(status().isBadRequest());
+
+		mockMvc.perform(get(batch(batch) + "/movements").with(maria()))
+				.andExpect(jsonPath("$[*].type", contains("ADJUSTMENT", "ADJUSTMENT", "INITIAL")))
+				.andExpect(jsonPath("$[0].quantityChange").value(5))
+				.andExpect(jsonPath("$[1].quantityChange").value(-20));
+	}
+
+	@Test
+	void historyAlwaysAddsUpToTheCurrentQuantity() throws Exception {
+		long batch = idOf(createBatch(cabinet, "2027-10-31", "60", null));
+		use(batch, "5");
+		use(batch, "2.5");
+		adjust(batch, "50");
+		use(batch, "10");
+		reloadFromTheDatabase();
+
+		assertThat(sumOfMovements(batch)).isEqualByComparingTo("40");
+		mockMvc.perform(get(batch(batch)).with(maria()))
+				.andExpect(jsonPath("$.currentQuantity").value(40));
+
+		discard(batch);
+		reloadFromTheDatabase();
+
+		assertThat(sumOfMovements(batch)).isEqualByComparingTo("0");
+		mockMvc.perform(get(batch(batch) + "/movements").with(maria()))
+				.andExpect(jsonPath("$[*].type", contains("DISCARD", "USE", "ADJUSTMENT", "USE", "USE", "INITIAL")));
+	}
+
+	@Test
+	void keepsOtherHouseholdsAwayFromMovements() throws Exception {
+		long batch = idOf(createBatch(cabinet, "2027-10-31", "60", null));
+
+		mockMvc.perform(post(batch(batch) + "/use").with(joao())
+				.contentType(MediaType.APPLICATION_JSON).content("{\"quantity\": 1}"))
+				.andExpect(status().isNotFound());
+		mockMvc.perform(post(batch(batch) + "/discard").with(joao()))
+				.andExpect(status().isNotFound());
+		mockMvc.perform(get(batch(batch) + "/movements").with(joao()))
+				.andExpect(status().isNotFound());
+	}
+
+	private ResultActions use(long batch, String quantity) throws Exception {
+		return mockMvc.perform(post(batch(batch) + "/use").with(maria())
+				.contentType(MediaType.APPLICATION_JSON).content("{\"quantity\": " + quantity + "}"));
+	}
+
+	private ResultActions discard(long batch) throws Exception {
+		return mockMvc.perform(post(batch(batch) + "/discard").with(maria()));
+	}
+
+	private ResultActions adjust(long batch, String quantity) throws Exception {
+		return mockMvc.perform(post(batch(batch) + "/adjust").with(maria())
+				.contentType(MediaType.APPLICATION_JSON).content("{\"quantity\": " + quantity + "}"));
+	}
+
+	private BigDecimal sumOfMovements(long batch) {
+		return entityManager.createQuery(
+				"select sum(m.quantityChange) from StockMovement m where m.batch.id = :batch", BigDecimal.class)
+				.setParameter("batch", batch)
+				.getSingleResult();
+	}
+
+	private String batch(long batchId) {
+		return batches(household, syrup) + "/" + batchId;
 	}
 
 	private ResultActions createBatch(long locationId, String expirationDate, String quantity, String openedAt)

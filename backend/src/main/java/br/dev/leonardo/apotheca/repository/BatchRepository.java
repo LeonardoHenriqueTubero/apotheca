@@ -5,8 +5,10 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 
 import br.dev.leonardo.apotheca.entity.Batch;
+import jakarta.persistence.LockModeType;
 
 public interface BatchRepository extends JpaRepository<Batch, Long> {
 
@@ -17,5 +19,10 @@ public interface BatchRepository extends JpaRepository<Batch, Long> {
 
 	@EntityGraph(attributePaths = { "medication", "storageLocation" })
 	Optional<Batch> findByIdAndMedicationId(Long id, Long medicationId);
+
+	/** Locks the row until the transaction ends, so two phones using the same box cannot both read 10. */
+	@Lock(LockModeType.PESSIMISTIC_WRITE)
+	@EntityGraph(attributePaths = { "medication", "storageLocation" })
+	Optional<Batch> findForUpdateByIdAndMedicationId(Long id, Long medicationId);
 
 }

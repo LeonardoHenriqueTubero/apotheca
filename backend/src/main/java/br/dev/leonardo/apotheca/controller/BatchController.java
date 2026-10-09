@@ -15,12 +15,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.dev.leonardo.apotheca.dto.AdjustRequest;
 import br.dev.leonardo.apotheca.dto.BatchRequest;
 import br.dev.leonardo.apotheca.dto.BatchResponse;
 import br.dev.leonardo.apotheca.dto.BatchUpdateRequest;
+import br.dev.leonardo.apotheca.dto.StockMovementResponse;
+import br.dev.leonardo.apotheca.dto.UseRequest;
 import br.dev.leonardo.apotheca.entity.Batch;
 import br.dev.leonardo.apotheca.entity.User;
 import br.dev.leonardo.apotheca.mapper.BatchMapper;
+import br.dev.leonardo.apotheca.mapper.StockMovementMapper;
 import br.dev.leonardo.apotheca.service.BatchService;
 import br.dev.leonardo.apotheca.service.ExpiryService;
 import br.dev.leonardo.apotheca.service.UserService;
@@ -34,13 +38,15 @@ public class BatchController {
 	private final ExpiryService expiryService;
 	private final UserService userService;
 	private final BatchMapper batchMapper;
+	private final StockMovementMapper movementMapper;
 
 	public BatchController(BatchService batchService, ExpiryService expiryService, UserService userService,
-			BatchMapper batchMapper) {
+			BatchMapper batchMapper, StockMovementMapper movementMapper) {
 		this.batchService = batchService;
 		this.expiryService = expiryService;
 		this.userService = userService;
 		this.batchMapper = batchMapper;
+		this.movementMapper = movementMapper;
 	}
 
 	@GetMapping
@@ -81,6 +87,36 @@ public class BatchController {
 			@PathVariable Long medicationId, @PathVariable Long batchId) {
 		batchService.delete(householdId, medicationId, batchId, userService.getOrCreate(jwt));
 		return ResponseEntity.noContent().build();
+	}
+
+	@PostMapping("/{batchId}/use")
+	public BatchResponse use(@AuthenticationPrincipal Jwt jwt, @PathVariable Long householdId,
+			@PathVariable Long medicationId, @PathVariable Long batchId, @Valid @RequestBody UseRequest request) {
+		User user = userService.getOrCreate(jwt);
+		return toResponse(batchService.use(householdId, medicationId, batchId, user, request.quantity()));
+	}
+
+	@PostMapping("/{batchId}/discard")
+	public BatchResponse discard(@AuthenticationPrincipal Jwt jwt, @PathVariable Long householdId,
+			@PathVariable Long medicationId, @PathVariable Long batchId) {
+		User user = userService.getOrCreate(jwt);
+		return toResponse(batchService.discard(householdId, medicationId, batchId, user));
+	}
+
+	@PostMapping("/{batchId}/adjust")
+	public BatchResponse adjust(@AuthenticationPrincipal Jwt jwt, @PathVariable Long householdId,
+			@PathVariable Long medicationId, @PathVariable Long batchId, @Valid @RequestBody AdjustRequest request) {
+		User user = userService.getOrCreate(jwt);
+		return toResponse(batchService.adjust(householdId, medicationId, batchId, user, request.quantity()));
+	}
+
+	@GetMapping("/{batchId}/movements")
+	public List<StockMovementResponse> movements(@AuthenticationPrincipal Jwt jwt, @PathVariable Long householdId,
+			@PathVariable Long medicationId, @PathVariable Long batchId) {
+		User user = userService.getOrCreate(jwt);
+		return batchService.movements(householdId, medicationId, batchId, user).stream()
+				.map(movementMapper::toResponse)
+				.toList();
 	}
 
 	private BatchResponse toResponse(Batch batch) {
