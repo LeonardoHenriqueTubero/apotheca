@@ -329,6 +329,7 @@ Do not add more (for example a login diagram) unless something is genuinely hard
 | 81 | Optional text sent blank is stored as `null` | Blank means "not informed" (see ADR 0014) |
 | 82 | Request → entity with MapStruct `@MappingTarget`, `unmappedTargetPolicy = ERROR`; updates via dirty checking, no `save()` | A forgotten new field breaks the build instead of being silently dropped (see ADR 0014) |
 | 83 | Medication screens: list at `/medications`, one editor for `/medications/new` and `/medications/:id`; the unit is suggested from the form (tablet → units, syrup → ml, cream → g) until the user picks one | Fewer taps on the phone; the user can still override it |
+| 84 | `overrides` in `frontend/package.json` forces `@grpc/grpc-js` ≥ 1.13.6; remove it once `@firebase/firestore` stops pinning `~1.9.0` | Clears Dependabot alerts that only affect Node gRPC servers; Firestore is unused and never bundled, and `npm audit fix --force` would downgrade Firebase |
 
 ## Commands
 
