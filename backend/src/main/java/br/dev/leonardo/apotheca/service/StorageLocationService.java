@@ -1,9 +1,6 @@
 package br.dev.leonardo.apotheca.service;
 
-import java.text.Collator;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Locale;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,10 +30,8 @@ public class StorageLocationService {
 	@Transactional(readOnly = true)
 	public List<StorageLocation> list(Long householdId, User user) {
 		householdService.requireMembership(householdId, user);
-		// Sorted here, not in SQL: database collations differ (the Alpine image sorts "Z" before "a").
-		Collator portuguese = Collator.getInstance(Locale.of("pt", "BR"));
 		return locationRepository.findByHouseholdId(householdId).stream()
-				.sorted(Comparator.comparing(StorageLocation::getName, portuguese))
+				.sorted(NameOrder.by(StorageLocation::getName))
 				.toList();
 	}
 
