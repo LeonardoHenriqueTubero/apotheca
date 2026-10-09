@@ -20,6 +20,9 @@ public interface BatchRepository extends JpaRepository<Batch, Long> {
 	@EntityGraph(attributePaths = { "medication", "storageLocation" })
 	Optional<Batch> findByIdAndMedicationId(Long id, Long medicationId);
 
+	@EntityGraph(attributePaths = "medication")
+	List<Batch> findByMedicationHouseholdId(Long householdId);
+
 	/** Locks the row until the transaction ends, so two phones using the same box cannot both read 10. */
 	@Lock(LockModeType.PESSIMISTIC_WRITE)
 	@EntityGraph(attributePaths = { "medication", "storageLocation" })

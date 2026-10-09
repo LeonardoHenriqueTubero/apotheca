@@ -17,9 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.dev.leonardo.apotheca.dto.MedicationRequest;
 import br.dev.leonardo.apotheca.dto.MedicationResponse;
+import br.dev.leonardo.apotheca.dto.MedicationSummaryResponse;
 import br.dev.leonardo.apotheca.entity.User;
 import br.dev.leonardo.apotheca.mapper.MedicationMapper;
 import br.dev.leonardo.apotheca.service.MedicationService;
+import br.dev.leonardo.apotheca.service.MedicationSummaryService;
 import br.dev.leonardo.apotheca.service.UserService;
 import jakarta.validation.Valid;
 
@@ -29,13 +31,22 @@ public class MedicationController {
 
 	private final MedicationService medicationService;
 	private final UserService userService;
+	private final MedicationSummaryService summaryService;
 	private final MedicationMapper medicationMapper;
 
 	public MedicationController(MedicationService medicationService, UserService userService,
-			MedicationMapper medicationMapper) {
+			MedicationSummaryService summaryService, MedicationMapper medicationMapper) {
 		this.medicationService = medicationService;
 		this.userService = userService;
+		this.summaryService = summaryService;
 		this.medicationMapper = medicationMapper;
+	}
+
+	@GetMapping("/summary")
+	public List<MedicationSummaryResponse> summary(@AuthenticationPrincipal Jwt jwt, @PathVariable Long householdId) {
+		return summaryService.list(householdId, userService.getOrCreate(jwt)).stream()
+				.map(medicationMapper::toSummaryResponse)
+				.toList();
 	}
 
 	@GetMapping

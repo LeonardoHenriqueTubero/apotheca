@@ -8,13 +8,22 @@ import org.mapstruct.ReportingPolicy;
 
 import br.dev.leonardo.apotheca.dto.MedicationRequest;
 import br.dev.leonardo.apotheca.dto.MedicationResponse;
+import br.dev.leonardo.apotheca.dto.MedicationSummaryResponse;
 import br.dev.leonardo.apotheca.entity.Medication;
+import br.dev.leonardo.apotheca.service.MedicationSummary;
 
 /** {@code unmappedTargetPolicy = ERROR}: a new entity field that nobody maps breaks the build. */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface MedicationMapper {
 
 	MedicationResponse toResponse(Medication medication);
+
+	@Mapping(target = "id", source = "medication.id")
+	@Mapping(target = "name", source = "medication.name")
+	@Mapping(target = "strength", source = "medication.strength")
+	@Mapping(target = "form", source = "medication.form")
+	@Mapping(target = "unit", source = "medication.unit")
+	MedicationSummaryResponse toSummaryResponse(MedicationSummary summary);
 
 	@Mapping(target = "id", ignore = true)
 	@Mapping(target = "household", ignore = true)
