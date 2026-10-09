@@ -108,6 +108,7 @@ com o contexto, as alternativas consideradas e os prós e contras.
 | [0012](docs/decisions/0012-authentication-with-firebase.md) | Autenticação: tokens do Firebase conferidos pelo Spring Security, tudo protegido por padrão, login com Google |
 | [0013](docs/decisions/0013-api-deployment-on-render.md) | Deploy da API: imagem Docker multi-stage no Render (Virgínia, perto do Neon), publicada só depois do CI passar |
 | [0014](docs/decisions/0014-api-design-and-error-format.md) | Desenho da API: rotas dentro da casa, 404 para quem não é membro, erros no padrão RFC 9457, services Angular escritos à mão |
+| [0015](docs/decisions/0015-batch-status-and-stock-movements.md) | Estoque muda só por uso, descarte e ajuste; o primeiro uso abre a caixa; caixas usadas até o fim ficam `EMPTY` |
 
 ## Como rodar localmente
 

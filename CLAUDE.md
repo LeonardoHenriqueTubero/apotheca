@@ -150,8 +150,13 @@ Key business rule: **effective expiry = the earlier of the printed expiry and
 `opened_at + shelf_life_after_opening_days`** (syrups, eye drops, reconstituted antibiotics).
 Pure logic, cover with unit tests. The app only stores what the user types from the leaflet.
 Boundaries: a batch is usable through its effective expiry day and **expired** from the next day;
-**expiring soon** when the effective expiry is within the next 30 days, inclusive. Implemented in
-`ExpiryService` and `LowStockService`.
+**expiring soon** when the effective expiry is within the next 30 days, inclusive. A batch with
+quantity 0 is **empty**, whatever its dates (ADR 0015). Implemented in `ExpiryService` and
+`LowStockService`.
+
+**Stock movements** (ADR 0015): quantity changes only through use (409 above what is left; the
+first use sets `opened_at` to today), discard (all that is left) and adjust (counted quantity);
+batch updates never change the quantity. `opened_at` cannot be after today in São Paulo.
 
 **Low stock** (ADR 0007): only for medications with `minimum_quantity` set; low when the sum of
 `current_quantity` of its **active** batches (quantity > 0 and not past the effective expiry)
@@ -330,6 +335,12 @@ Do not add more (for example a login diagram) unless something is genuinely hard
 | 82 | Request → entity with MapStruct `@MappingTarget`, `unmappedTargetPolicy = ERROR`; updates via dirty checking, no `save()` | A forgotten new field breaks the build instead of being silently dropped (see ADR 0014) |
 | 83 | Medication screens: list at `/medications`, one editor for `/medications/new` and `/medications/:id`; the unit is suggested from the form (tablet → units, syrup → ml, cream → g) until the user picks one | Fewer taps on the phone; the user can still override it |
 | 84 | `overrides` in `frontend/package.json` forces `@grpc/grpc-js` ≥ 1.13.6; remove it once `@firebase/firestore` stops pinning `~1.9.0` | Clears Dependabot alerts that only affect Node gRPC servers; Firestore is unused and never bundled, and `npm audit fix --force` would downgrade Firebase |
+| 85 | Batch quantity changes only through `use` / `discard` / `adjust` endpoints, each writing one movement; `PUT` edits location and dates only | The history always adds up to the current quantity (see ADR 0015) |
+| 86 | The first use of a box without `opened_at` sets it to today | Shelf life after opening starts without anyone remembering it (see ADR 0015) |
+| 87 | Discard empties the box; partial losses are adjustments to the counted quantity | One tap to throw away an expired box (see ADR 0015) |
+| 88 | Status `EMPTY` for quantity 0, checked before the dates; ignored by summaries and alerts | A used-up box is not expired medicine in the house (see ADR 0015) |
+| 89 | `opened_at` not after today, checked in `BatchService` with the São Paulo `Clock`, same 400 shape as validation | `@PastOrPresent` uses the UTC server clock (see ADR 0015) |
+| 90 | Use, discard and adjust lock the batch row (`PESSIMISTIC_WRITE`) | Two phones cannot read the same stale quantity (see ADR 0015) |
 
 ## Commands
 
