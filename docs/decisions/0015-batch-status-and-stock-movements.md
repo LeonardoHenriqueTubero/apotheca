@@ -30,6 +30,7 @@ same transaction:
 | `POST .../batches/{id}/discard` | none | `DISCARD`, −(all that is left) | 409 if already empty |
 | `POST .../batches/{id}/adjust` | `{"quantity": 80}` (counted) | `ADJUSTMENT`, the difference | no movement if nothing changed |
 
+`GET .../batches` lists boxes with medicine first, by effective expiry, and used-up boxes last.
 `GET .../batches/{id}/movements` lists the history, newest first. Creating a batch writes
 `INITIAL`. Deleting a batch removes its history too and is meant for registration mistakes;
 throwing a box away is a discard, which keeps the history.

@@ -307,6 +307,28 @@ class BatchControllerTest {
 				.andExpect(status().isNotFound());
 	}
 
+	@Test
+	void listsUsedUpBoxesAfterTheOnesWithMedicine() throws Exception {
+		long usedUp = idOf(createBatch(cabinet, TODAY.plusDays(1).toString(), "8", null));
+		discard(usedUp);
+		long later = idOf(createBatch(cabinet, "2028-01-31", "60", null));
+		long sooner = idOf(createBatch(cabinet, "2027-03-31", "60", null));
+		reloadFromTheDatabase();
+
+		mockMvc.perform(get(batches(household, syrup)).with(maria()))
+				.andExpect(jsonPath("$[*].id", contains((int) sooner, (int) later, (int) usedUp)));
+	}
+
+	@Test
+	void answersValidationMessagesInEnglishWhateverTheBrowserLanguage() throws Exception {
+		long batch = idOf(createBatch(cabinet, "2027-10-31", "60", null));
+
+		mockMvc.perform(post(batch(batch) + "/use").with(maria()).header("Accept-Language", "pt-BR")
+				.contentType(MediaType.APPLICATION_JSON).content("{\"quantity\": 0}"))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.errors.quantity", is("must be greater than 0")));
+	}
+
 	private ResultActions use(long batch, String quantity) throws Exception {
 		return mockMvc.perform(post(batch(batch) + "/use").with(maria())
 				.contentType(MediaType.APPLICATION_JSON).content("{\"quantity\": " + quantity + "}"));

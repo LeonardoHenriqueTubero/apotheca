@@ -47,7 +47,9 @@ public class BatchService {
 	public List<Batch> list(Long householdId, Long medicationId, User user) {
 		medicationService.get(householdId, medicationId, user);
 		return batchRepository.findByMedicationId(medicationId).stream()
-				.sorted(Comparator.comparing(expiryService::effectiveExpiry).thenComparing(Batch::getId))
+				.sorted(Comparator.comparing((Batch batch) -> batch.getCurrentQuantity().signum() == 0)
+						.thenComparing(expiryService::effectiveExpiry)
+						.thenComparing(Batch::getId))
 				.toList();
 	}
 

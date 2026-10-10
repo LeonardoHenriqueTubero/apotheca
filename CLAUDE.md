@@ -342,6 +342,7 @@ Do not add more (for example a login diagram) unless something is genuinely hard
 | 89 | `opened_at` not after today, checked in `BatchService` with the São Paulo `Clock`, same 400 shape as validation | `@PastOrPresent` uses the UTC server clock (see ADR 0015) |
 | 90 | Use, discard and adjust lock the batch row (`PESSIMISTIC_WRITE`) | Two phones cannot read the same stale quantity (see ADR 0015) |
 | 91 | `GET .../medications/summary`: available quantity (active batches), next expiry, worst status of non-empty batches, low stock; one batch query per household | One rule for the list, the home page and the alerts; no N+1 (see ADR 0015) |
+| 92 | API locale fixed to English (`spring.web.locale=en`, `locale-resolver=fixed`) | Bean Validation messages otherwise follow the browser's `Accept-Language`; ADR 0014 keeps API messages in English |
 
 ## Commands
 
