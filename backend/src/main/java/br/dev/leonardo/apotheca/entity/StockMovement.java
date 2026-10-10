@@ -42,4 +42,10 @@ public class StockMovement {
 	@CreationTimestamp
 	private Instant occurredAt;
 
+	public StockMovement(Batch batch, StockMovementType type, BigDecimal quantityChange) {
+		this.batch = batch;
+		this.type = type;
+		this.quantityChange = quantityChange;
+	}
+
 }

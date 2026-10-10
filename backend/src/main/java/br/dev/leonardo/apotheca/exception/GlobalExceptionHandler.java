@@ -32,6 +32,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, exception.getMessage());
 	}
 
+	/** Same shape as Bean Validation errors, for rules that need the service (e.g. today's date). */
+	@ExceptionHandler(InvalidFieldException.class)
+	public ProblemDetail handleInvalidField(InvalidFieldException exception) {
+		ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Invalid request content.");
+		problem.setProperty("errors", Map.of(exception.getField(), exception.getMessage()));
+		return problem;
+	}
+
 	/** Adds the invalid fields, e.g. {@code "errors": {"name": "must not be blank"}}. */
 	@Override
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException exception,

@@ -32,6 +32,9 @@ public class ExpiryService {
 	}
 
 	public BatchStatus status(Batch batch) {
+		if (batch.getCurrentQuantity().signum() == 0) {
+			return BatchStatus.EMPTY;
+		}
 		LocalDate today = LocalDate.now(clock);
 		LocalDate effectiveExpiry = effectiveExpiry(batch);
 

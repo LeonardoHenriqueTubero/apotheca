@@ -182,11 +182,7 @@ class SchemaMappingTest {
 	}
 
 	private void persistMovement(Batch batch, StockMovementType type, BigDecimal quantityChange) {
-		StockMovement movement = new StockMovement();
-		movement.setBatch(batch);
-		movement.setType(type);
-		movement.setQuantityChange(quantityChange);
-		entityManager.persist(movement);
+		entityManager.persist(new StockMovement(batch, type, quantityChange));
 	}
 
 	private long countRows(String table) {

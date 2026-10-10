@@ -224,11 +224,7 @@ class MedicationControllerTest {
 		batch.setCurrentQuantity(new BigDecimal("10"));
 		entityManager.persist(batch);
 
-		StockMovement movement = new StockMovement();
-		movement.setBatch(batch);
-		movement.setType(StockMovementType.INITIAL);
-		movement.setQuantityChange(new BigDecimal("10"));
-		entityManager.persist(movement);
+		entityManager.persist(new StockMovement(batch, StockMovementType.INITIAL, new BigDecimal("10")));
 		reloadFromTheDatabase();
 	}
 

@@ -71,7 +71,7 @@ public class StorageLocationService {
 	}
 
 	/** The location must belong to the household in the URL, or it answers 404 like any other household's data. */
-	private StorageLocation requireLocation(Long householdId, Long locationId, User user) {
+	StorageLocation requireLocation(Long householdId, Long locationId, User user) {
 		householdService.requireMembership(householdId, user);
 		return locationRepository.findByIdAndHouseholdId(locationId, householdId)
 				.orElseThrow(() -> new NotFoundException("Storage location " + locationId + " not found"));

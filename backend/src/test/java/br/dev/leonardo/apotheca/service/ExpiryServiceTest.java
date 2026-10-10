@@ -2,6 +2,7 @@ package br.dev.leonardo.apotheca.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -76,6 +77,14 @@ class ExpiryServiceTest {
 	}
 
 	@Test
+	void emptyBatchIsEmptyEvenWhenItsDateHasPassed() {
+		Batch usedUp = batch(TODAY.minusDays(100), null, null);
+		usedUp.setCurrentQuantity(new BigDecimal("0.00"));
+
+		assertThat(service.status(usedUp)).isEqualTo(BatchStatus.EMPTY);
+	}
+
+	@Test
 	void usesSaoPauloDateWhenUtcIsAlreadyTheNextDay() {
 		ExpiryService lateEvening = new ExpiryService(
 				Clock.fixed(Instant.parse("2026-10-03T02:00:00Z"), SAO_PAULO));
@@ -93,6 +102,7 @@ class ExpiryServiceTest {
 		batch.setMedication(medication);
 		batch.setExpirationDate(expirationDate);
 		batch.setOpenedAt(openedAt);
+		batch.setCurrentQuantity(BigDecimal.TEN);
 		return batch;
 	}
 
